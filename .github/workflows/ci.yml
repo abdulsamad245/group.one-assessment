@@ -10,6 +10,20 @@ jobs:
   laravel-ci:
     runs-on: ubuntu-latest
 
+    # MySQL service for tests
+    services:
+      mysql:
+        image: mysql/mysql-server:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: testing
+          MYSQL_USER: root
+          MYSQL_PASSWORD: password
+        ports:
+          - 3307:3306
+        options: >-
+          --default-authentication-plugin=mysql_native_password
+
     env:
       DB_CONNECTION: mysql
       DB_HOST: mysql
@@ -17,9 +31,7 @@ jobs:
       DB_DATABASE: testing
       DB_USERNAME: root
       DB_PASSWORD: password
-      APP_ENV: testing
-      APP_DEBUG: true
-      APP_KEY: ${{ secrets.APP_KEY }}   # Use GitHub secret
+      APP_KEY: ${{ secrets.APP_KEY }}
 
     steps:
       # 1. Checkout code
@@ -41,19 +53,21 @@ jobs:
           sudo mv composer.phar /usr/local/bin/composer
           composer install --no-interaction --prefer-dist
 
-      # 4. Copy .env
-      - name: Copy .env
-        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      # 4. Copy .env and set APP_KEY
+      - name: Copy .env and set APP_KEY
+        run: |
+          php -r "file_exists('.env') || copy('.env.example', '.env');"
+          echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
 
-      # 5. Start Laravel Sail (MySQL + services)
+      # 5. Start Laravel Sail
       - name: Start Sail
         run: ./vendor/bin/sail up -d
 
       # 6. Wait for MySQL to be ready
       - name: Wait for MySQL
         run: |
-          until ./vendor/bin/sail exec -T mysql mysqladmin ping -uroot -ppassword --silent; do
-            echo "Waiting for MySQL..."
+          until ./vendor/bin/sail exec -T mysql mysqladmin ping -h"mysql" --silent; do
+            echo "Waiting for database..."
             sleep 5
           done
 
