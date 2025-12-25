@@ -21,11 +21,7 @@ jobs:
           MYSQL_PASSWORD: password
         ports:
           - 3307:3306
-        options: >
-          --health-cmd="mysqladmin ping -uroot -ppassword"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
+        options: --health-cmd="mysqladmin ping -uroot -ppassword" --health-interval=10s --health-timeout=5s --health-retries=10
 
     env:
       DB_CONNECTION: mysql
@@ -75,10 +71,16 @@ jobs:
       - name: Set Up Database
         run: ./vendor/bin/sail artisan migrate --seed --force
 
-      # 8. Validate PR description (only on PRs)
-      - name: Validate PR Description
+      # 8. Validate Pull Request Description (manual check)
+      - name: Validate Pull Request Description
         if: github.event_name == 'pull_request'
-        uses: wp-media/pr-description-validator@v1
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const description = context.payload.pull_request.body;
+            if (!description || description.length < 20) {
+              throw new Error("PR description is too short or empty. Please provide a detailed description.");
+            }
 
       # 9. Run unit & integration tests
       - name: Execute Tests
