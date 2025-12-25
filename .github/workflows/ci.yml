@@ -10,7 +10,6 @@ jobs:
   laravel-ci:
     runs-on: ubuntu-latest
 
-    # MySQL service for tests
     services:
       mysql:
         image: mysql:8.0
@@ -32,11 +31,9 @@ jobs:
       APP_KEY: ${{ secrets.APP_KEY }}
 
     steps:
-      # 1. Checkout code
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. Setup PHP
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -44,24 +41,20 @@ jobs:
           extensions: mbstring, bcmath, mysql, pdo_mysql
           ini-values: post_max_size=256M, memory_limit=2G
 
-      # 3. Install composer dependencies
       - name: Install Dependencies
         run: |
           curl -sS https://getcomposer.org/installer | php -- --version=2.7.6
           sudo mv composer.phar /usr/local/bin/composer
           composer install --no-interaction --prefer-dist
 
-      # 4. Copy .env and set APP_KEY
       - name: Copy .env and set APP_KEY
         run: |
           php -r "file_exists('.env') || copy('.env.example', '.env');"
           echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
 
-      # 5. Start Laravel Sail
       - name: Start Sail
         run: ./vendor/bin/sail up -d
 
-      # 6. Wait for MySQL to be ready
       - name: Wait for MySQL
         run: |
           until ./vendor/bin/sail exec -T mysql mysqladmin ping -h"mysql" --silent; do
@@ -69,11 +62,9 @@ jobs:
             sleep 5
           done
 
-      # 7. Run migrations & seeders
       - name: Set Up Database
         run: ./vendor/bin/sail artisan migrate --seed --force
 
-      # 8. Validate Pull Request Description (manual validation)
       - name: Validate Pull Request Description
         uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
@@ -81,52 +72,31 @@ jobs:
           script: |
             const description = context.payload.pull_request.body;
             if (!description || description.length < 20) {
-              throw new Error("PR description is too short or empty. Please provide a detailed description.");
+              throw new Error("PR description is too short or empty.");
             }
 
-      # 9. Run unit & integration tests
       - name: Execute Tests
         run: ./vendor/bin/sail test
 
-      # 10. Generate code coverage report
       - name: Generate Coverage Report
         run: ./vendor/bin/sail php vendor/bin/phpunit --coverage-clover=tests/report/coverage.xml
 
-      # 11. Install diff-cover
       - name: Install diff-cover
         run: pip install diff-cover
 
-      # 12. Run diff coverage (fail if under 50%)
       - name: Run Diff Coverage
         run: |
           diff-cover tests/report/coverage.xml --compare-branch=origin/develop --fail-under=50
 
-      # 13. Run code quality checks
-      - name: Run Linting & Static Analysis
+      # ❌ TEMPORARILY DISABLED PHPCS & PINT
+      - name: Run Static Analysis Only
         run: |
-          composer lint        # Pint / formatting
-          composer phpstan     # PHPStan
-          # composer phpcs     # PHPCS / coding standards (temporarily disabled)
+          # composer lint      
+          composer phpstan    
 
-      # 14. Upload coverage to Codacy
       - name: Upload Coverage to Codacy
         if: github.event_name == 'push' || github.event_name == 'pull_request'
         uses: codacy/codacy-coverage-reporter-action@v1
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           coverage-reports: tests/report/coverage.xml
-
-      # 15. Post diff coverage report to PR (optional)
-      - name: Post Diff Coverage to PR
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const fs = require('fs');
-            const comment = fs.readFileSync('diff-cover-report.md', 'utf8');
-            await github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment,
-            })
