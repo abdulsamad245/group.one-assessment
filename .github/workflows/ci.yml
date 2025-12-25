@@ -20,11 +20,7 @@ jobs:
           MYSQL_PASSWORD: password
         ports:
           - 3307:3306
-        options: >
-          --health-cmd="mysqladmin ping -uroot -ppassword"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
+        options: "--health-cmd='mysqladmin ping -uroot -ppassword' --health-interval=10s --health-timeout=5s --health-retries=5"
 
     env:
       DB_CONNECTION: mysql
@@ -33,6 +29,7 @@ jobs:
       DB_DATABASE: testing
       DB_USERNAME: root
       DB_PASSWORD: password
+      APP_KEY: base64:CiGeneratedAutomatically==
 
     steps:
       # 1. Checkout code
@@ -47,20 +44,18 @@ jobs:
           extensions: mbstring, bcmath, mysql, pdo_mysql
           ini-values: post_max_size=256M, memory_limit=2G
 
-      # 3. Install composer dependencies
+      # 3. Install Composer dependencies
       - name: Install Dependencies
         run: |
           curl -sS https://getcomposer.org/installer | php -- --version=2.7.6
           sudo mv composer.phar /usr/local/bin/composer
           composer install --no-interaction --prefer-dist
 
-      # 4. Copy .env
-      - name: Copy .env
-        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
-
-      # 4.5 Generate APP_KEY
-      - name: Generate APP_KEY
-        run: ./vendor/bin/sail artisan key:generate --ansi
+      # 4. Copy .env and generate APP_KEY
+      - name: Copy .env & Generate APP_KEY
+        run: |
+          php -r "file_exists('.env') || copy('.env.example', '.env');"
+          php artisan key:generate --ansi
 
       # 5. Start Laravel Sail
       - name: Start Sail
@@ -78,7 +73,7 @@ jobs:
       - name: Set Up Database
         run: ./vendor/bin/sail artisan migrate --seed --force
 
-      # 8. Validate Pull Request Description (manual)
+      # 8. Manual PR description validation
       - name: Validate Pull Request Description
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v6
@@ -105,9 +100,9 @@ jobs:
       # 12. Run code quality checks
       - name: Run Linting & Static Analysis
         run: |
-          composer lint
-          composer phpstan
-          composer pint:test
+          composer lint        # Pint / formatting
+          composer phpstan     # PHPStan
+          composer phpcs       # PHPCS / coding standards
 
       # 13. Upload coverage to Codacy (optional)
       - name: Upload Coverage to Codacy
