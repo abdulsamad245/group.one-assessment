@@ -10,6 +10,7 @@ jobs:
   laravel-ci:
     runs-on: ubuntu-latest
 
+    # MySQL service for tests
     services:
       mysql:
         image: mysql/mysql-server:8.0
@@ -20,7 +21,11 @@ jobs:
           MYSQL_PASSWORD: password
         ports:
           - 3307:3306
-        options: "--health-cmd='mysqladmin ping -uroot -ppassword' --health-interval=10s --health-timeout=5s --health-retries=5"
+        options: |-
+          --health-cmd="mysqladmin ping -uroot -ppassword"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
 
     env:
       DB_CONNECTION: mysql
@@ -29,7 +34,6 @@ jobs:
       DB_DATABASE: testing
       DB_USERNAME: root
       DB_PASSWORD: password
-      APP_KEY: base64:CiGeneratedAutomatically==
 
     steps:
       # 1. Checkout code
@@ -44,7 +48,7 @@ jobs:
           extensions: mbstring, bcmath, mysql, pdo_mysql
           ini-values: post_max_size=256M, memory_limit=2G
 
-      # 3. Install Composer dependencies
+      # 3. Install composer dependencies
       - name: Install Dependencies
         run: |
           curl -sS https://getcomposer.org/installer | php -- --version=2.7.6
@@ -61,7 +65,7 @@ jobs:
       - name: Start Sail
         run: ./vendor/bin/sail up -d
 
-      # 6. Wait for MySQL
+      # 6. Wait for MySQL to be ready
       - name: Wait for MySQL
         run: |
           until ./vendor/bin/sail exec -T mysql mysqladmin ping -h"mysql" --silent; do
@@ -73,10 +77,10 @@ jobs:
       - name: Set Up Database
         run: ./vendor/bin/sail artisan migrate --seed --force
 
-      # 8. Manual PR description validation
+      # 8. Validate Pull Request Description (manual validation)
       - name: Validate Pull Request Description
-        if: github.event_name == 'pull_request'
         uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
         with:
           script: |
             const description = context.payload.pull_request.body;
