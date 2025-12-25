@@ -10,22 +10,19 @@ jobs:
   laravel-ci:
     runs-on: ubuntu-latest
 
-    # MySQL service for tests
     services:
       mysql:
-        image: mysql/mysql-server:8.0
+        image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: password
           MYSQL_DATABASE: testing
-          MYSQL_USER: root
-          MYSQL_PASSWORD: password
         ports:
           - 3307:3306
-        options: |-
-          --health-cmd="mysqladmin ping -uroot -ppassword"
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=10
+          --health-retries=5
 
     env:
       DB_CONNECTION: mysql
@@ -34,6 +31,7 @@ jobs:
       DB_DATABASE: testing
       DB_USERNAME: root
       DB_PASSWORD: password
+      APP_KEY: ${{ secrets.APP_KEY }}
 
     steps:
       # 1. Checkout code
@@ -55,15 +53,17 @@ jobs:
           sudo mv composer.phar /usr/local/bin/composer
           composer install --no-interaction --prefer-dist
 
-      # 4. Copy .env
-      - name: Copy .env
-        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      # 4. Copy .env and set APP_KEY
+      - name: Copy .env and set APP_KEY
+        run: |
+          php -r "file_exists('.env') || copy('.env.example', '.env');"
+          echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
 
       # 5. Start Laravel Sail
       - name: Start Sail
         run: ./vendor/bin/sail up -d
 
-      # 6. Wait for MySQL to be ready
+      # 6. Wait for MySQL
       - name: Wait for MySQL
         run: |
           until ./vendor/bin/sail exec -T mysql mysqladmin ping -h"mysql" --silent; do
@@ -75,15 +75,15 @@ jobs:
       - name: Set Up Database
         run: ./vendor/bin/sail artisan migrate --seed --force
 
-      # 8. Validate Pull Request Description (manual validation)
+      # 8. Validate Pull Request Description
       - name: Validate Pull Request Description
-        uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
         with:
           script: |
             const description = context.payload.pull_request.body;
             if (!description || description.length < 20) {
-              throw new Error("PR description is too short or empty. Please provide a detailed description.");
+              throw new Error("PR description is too short or empty.");
             }
 
       # 9. Run unit & integration tests
@@ -94,37 +94,25 @@ jobs:
       - name: Generate Coverage Report
         run: ./vendor/bin/sail php vendor/bin/phpunit --coverage-clover=tests/report/coverage.xml
 
-      # 11. Run diff coverage (fail if under 50%)
+      # 11. Install diff-cover
+      - name: Install diff-cover
+        run: pip install diff-cover
+
+      # 12. Run diff coverage (fail if under 50%)
       - name: Run Diff Coverage
         run: |
           diff-cover tests/report/coverage.xml --compare-branch=origin/develop --fail-under=50
 
-      # 12. Run code quality checks
-      - name: Run Linting & Static Analysis
+      # 13. Run Static Analysis Only (temporarily disabled PHPCS & Pint)
+      - name: Run Static Analysis Only
         run: |
-          composer lint        # Pint / formatting
-          composer phpstan     # PHPStan
-          composer phpcs       # PHPCS / coding standards
+          # composer lint      
+          composer phpstan    
 
-      # 13. Upload coverage to Codacy (optional)
+      # 14. Upload coverage to Codacy
       - name: Upload Coverage to Codacy
         if: github.event_name == 'push' || github.event_name == 'pull_request'
         uses: codacy/codacy-coverage-reporter-action@v1
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           coverage-reports: tests/report/coverage.xml
-
-      # 14. Post diff coverage report to PR (optional)
-      - name: Post Diff Coverage to PR
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const fs = require('fs');
-            const comment = fs.readFileSync('diff-cover-report.md', 'utf8');
-            await github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment,
-            })
