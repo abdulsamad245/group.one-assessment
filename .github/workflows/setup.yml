@@ -1,17 +1,13 @@
 name: Laravel Setup
 
 on:
-  pull_request:
-    branches:
-      - develop
-      - main
   push:
-    branches:
-      - develop
-      - main
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
 
 jobs:
-  setup:
+  laravel-setup:
     runs-on: ubuntu-latest
 
     services:
@@ -59,7 +55,7 @@ jobs:
           php -r "file_exists('.env') || copy('.env.example', '.env');"
           echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
 
-      - name: Start Sail
+      - name: Start Laravel Sail
         run: ./vendor/bin/sail up -d
 
       - name: Wait for MySQL
