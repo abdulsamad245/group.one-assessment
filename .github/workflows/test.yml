@@ -10,15 +10,6 @@ jobs:
   laravel-tests:
     runs-on: ubuntu-latest
 
-    env:
-      DB_CONNECTION: mysql
-      DB_HOST: mysql
-      DB_PORT: 3306
-      DB_DATABASE: testing
-      DB_USERNAME: root
-      DB_PASSWORD: password
-      APP_KEY: ${{ secrets.APP_KEY }}
-
     services:
       mysql:
         image: mysql:8.0
@@ -33,6 +24,15 @@ jobs:
           --health-timeout=5s
           --health-retries=5
 
+    env:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: testing
+      DB_USERNAME: root
+      DB_PASSWORD: password
+      APP_KEY: ${{ secrets.APP_KEY }}
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -43,6 +43,30 @@ jobs:
           php-version: '8.2'
           extensions: mbstring, bcmath, mysql, pdo_mysql
           ini-values: post_max_size=256M, memory_limit=2G
+
+      - name: Install Dependencies
+        run: |
+          curl -sS https://getcomposer.org/installer | php -- --version=2.7.6
+          sudo mv composer.phar /usr/local/bin/composer
+          composer install --no-interaction --prefer-dist
+
+      - name: Copy .env and set APP_KEY
+        run: |
+          php -r "file_exists('.env') || copy('.env.example', '.env');"
+          echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
+
+      - name: Start Laravel Sail
+        run: ./vendor/bin/sail up -d
+
+      - name: Wait for MySQL
+        run: |
+          until ./vendor/bin/sail exec -T mysql mysqladmin ping -h"mysql" --silent; do
+            echo "Waiting for database..."
+            sleep 5
+          done
+
+      - name: Set Up Database
+        run: ./vendor/bin/sail artisan migrate --seed --force
 
       - name: Execute Tests
         run: ./vendor/bin/sail test
