@@ -91,7 +91,7 @@ jobs:
         if: github.event_name == 'pull_request'
         uses: wp-media/pr-checklist-action@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       # 10. Run unit & integration tests
       - name: Execute Tests
