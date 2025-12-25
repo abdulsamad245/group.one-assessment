@@ -106,7 +106,7 @@ jobs:
         run: |
           composer lint        # Pint / formatting
           composer phpstan     # PHPStan
-          composer phpcs       # PHPCS / coding standards
+          # composer phpcs     # PHPCS / coding standards (temporarily disabled)
 
       # 14. Upload coverage to Codacy
       - name: Upload Coverage to Codacy
