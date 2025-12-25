@@ -1,135 +1,66 @@
-# Pull Request
-
-## Description
-
-<!-- Provide a clear and concise description of what this PR does -->
-
-## Type of Change
-
-<!-- Mark the relevant option with an "x" -->
-
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] Documentation update
-- [ ] Code refactoring
-- [ ] Performance improvement
-- [ ] Test coverage improvement
-- [ ] CI/CD improvement
-- [ ] Dependency update
-
-## Related Issue
-
-<!-- Link to the related issue(s) -->
+# Description
 
 Fixes #(issue number)
+*Explain how this code impacts users.*
 
-## Changes Made
+## Type of change
 
-<!-- List the specific changes made in this PR -->
+- [ ] New feature (non-breaking change which adds functionality).
+- [ ] Bug fix (non-breaking change which fixes an issue).
+- [ ] Enhancement (non-breaking change which improves an existing functionality).
+- [ ] Breaking change (fix or feature that would cause existing functionality to not work as before).
+- [ ] Sub-task of #(issue number)
+- [ ] Chore
+- [ ] Release
 
-- 
-- 
-- 
+## Detailed scenario
 
-## Testing
+### What was tested
 
-<!-- Describe the tests you ran to verify your changes -->
+*Describe the scenarios that you tested, and specify if it is automated or manual. For manual scenarios, provide a screenshot of the results.*
 
-### Test Coverage
+### How to test
 
-- [ ] Unit tests added/updated
-- [ ] Integration tests added/updated
-- [ ] All tests passing locally
-- [ ] Diff coverage meets 50% minimum
+*Describe how the PR can be tested so that the validator can be autonomous: environment, dependencies, specific setup, steps to perform, API requests, etc.*
 
-### Manual Testing
+### Affected Features & Quality Assurance Scope
 
-<!-- Describe any manual testing performed -->
+*Please specify which existing features or modules are impacted by the changes in this Pull Request. This information is crucial for the QA team to properly define the testing scope and ensure comprehensive test coverage.*
 
-- 
-- 
+## Technical description
 
-## Screenshots (if applicable)
+### Documentation
 
-<!-- Add screenshots to help explain your changes -->
+*Explain how this code works. Diagrams & drawings are welcome.*
 
-## Checklist
+### New dependencies
 
-<!-- Mark completed items with an "x" -->
+*List any new dependencies that are required for this change.*
 
-- [ ] My code follows the project's code style (PSR-12)
-- [ ] I have run `composer pint` to format my code
-- [ ] I have run `composer phpstan` and fixed all issues
-- [ ] I have added tests that prove my fix is effective or that my feature works
-- [ ] New and existing unit tests pass locally with my changes
-- [ ] I have added necessary documentation (if appropriate)
-- [ ] My changes generate no new warnings or errors
-- [ ] I have updated the CHANGELOG.md (if applicable)
-- [ ] I have reviewed my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
-- [ ] My changes do not introduce new technical debt
+### Risks
 
-## Database Changes
+*List possible performance & security issues or risks, and explain how they have been mitigated.*
 
-<!-- If this PR includes database changes, describe them here -->
+# Mandatory Checklist
 
-- [ ] No database changes
-- [ ] Migrations added
-- [ ] Seeders updated
-- [ ] Database schema documented
+## Code validation
 
-## API Changes
+- [ ] I validated all the Acceptance Criteria. If possible, provide screenshots or videos.
+- [ ] I triggered all changed lines of code at least once without new errors/warnings/notices.
+- [ ] I implemented built-in tests to cover the new/changed code.
 
-<!-- If this PR includes API changes, describe them here -->
+## Code style
 
-- [ ] No API changes
-- [ ] New endpoints added
-- [ ] Existing endpoints modified
-- [ ] Breaking changes to API
-- [ ] Swagger/OpenAPI documentation updated
+- [ ] I wrote a self-explanatory code about what it does.
+- [ ] I protected entry points against unexpected inputs.
+- [ ] I did not introduce unnecessary complexity.
+- [ ] Output messages (errors, notices, logs) are explicit enough for users to understand the issue and are actionnable.
 
-## Performance Impact
+## Unticked items justification
 
-<!-- Describe any performance implications of your changes -->
+*If some mandatory items are not relevant, explain why in this section.*
 
-- [ ] No performance impact
-- [ ] Performance improved
-- [ ] Performance degraded (explain why this is acceptable)
-
-## Security Considerations
-
-<!-- Describe any security implications of your changes -->
-
-- [ ] No security implications
-- [ ] Security improved
-- [ ] New security considerations (describe below)
-
-## Deployment Notes
-
-<!-- Any special deployment considerations? -->
-
-- [ ] No special deployment steps required
-- [ ] Requires environment variable changes
-- [ ] Requires configuration changes
-- [ ] Requires database migration
-- [ ] Requires cache clear
-- [ ] Requires queue restart
-
-## Additional Context
-
-<!-- Add any other context about the PR here -->
-
-## Reviewer Notes
-
-<!-- Any specific areas you'd like reviewers to focus on? -->
-
----
-
-**By submitting this pull request, I confirm that:**
-
-- [ ] I have read and followed the [Contributing Guidelines](../CONTRIBUTING.md)
-- [ ] I have tested my changes thoroughly
-- [ ] I am ready for code review
-
+# Additional Checks
+- [ ] In the case of complex code, I wrote comments to explain it.
+- [ ] When possible, I prepared ways to observe the implemented system (logs, data, etc.).
+- [ ] I added error handling logic when using functions that could throw errors (HTTP/API request, filesystem, etc.)
