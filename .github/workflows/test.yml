@@ -1,0 +1,27 @@
+name: Unit/Integration tests
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Execute Tests
+        run: ./vendor/bin/sail test
+
+      - name: Generate Coverage Report
+        run: ./vendor/bin/sail php vendor/bin/phpunit --coverage-clover=tests/report/coverage.xml
+
+      - name: Install diff-cover
+        run: pip install diff-cover
+
+      - name: Run Diff Coverage
+        run: diff-cover tests/report/coverage.xml --compare-branch=origin/develop --fail-under=50
