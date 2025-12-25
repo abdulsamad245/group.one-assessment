@@ -10,7 +10,6 @@ jobs:
   laravel-ci:
     runs-on: ubuntu-latest
 
-    # MySQL service for tests
     services:
       mysql:
         image: mysql/mysql-server:8.0
@@ -21,7 +20,11 @@ jobs:
           MYSQL_PASSWORD: password
         ports:
           - 3307:3306
-        options: --health-cmd="mysqladmin ping -uroot -ppassword" --health-interval=10s --health-timeout=5s --health-retries=10
+        options: >
+          --health-cmd="mysqladmin ping -uroot -ppassword"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     env:
       DB_CONNECTION: mysql
@@ -55,11 +58,15 @@ jobs:
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
 
+      # 4.5 Generate APP_KEY
+      - name: Generate APP_KEY
+        run: ./vendor/bin/sail artisan key:generate --ansi
+
       # 5. Start Laravel Sail
       - name: Start Sail
         run: ./vendor/bin/sail up -d
 
-      # 6. Wait for MySQL to be ready
+      # 6. Wait for MySQL
       - name: Wait for MySQL
         run: |
           until ./vendor/bin/sail exec -T mysql mysqladmin ping -h"mysql" --silent; do
@@ -71,7 +78,7 @@ jobs:
       - name: Set Up Database
         run: ./vendor/bin/sail artisan migrate --seed --force
 
-      # 8. Validate Pull Request Description (manual check)
+      # 8. Validate Pull Request Description (manual)
       - name: Validate Pull Request Description
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v6
@@ -98,9 +105,9 @@ jobs:
       # 12. Run code quality checks
       - name: Run Linting & Static Analysis
         run: |
-          composer lint        # Pint / formatting
-          composer phpstan     # PHPStan
-          composer phpcs       # PHPCS / coding standards
+          composer lint
+          composer phpstan
+          composer pint:test
 
       # 13. Upload coverage to Codacy (optional)
       - name: Upload Coverage to Codacy
