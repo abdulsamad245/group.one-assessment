@@ -16,10 +16,13 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: password
           MYSQL_DATABASE: testing
-          MYSQL_USER: root
-          MYSQL_PASSWORD: password
         ports:
           - 3307:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     env:
       DB_CONNECTION: mysql
@@ -66,8 +69,8 @@ jobs:
         run: ./vendor/bin/sail artisan migrate --seed --force
 
       - name: Validate Pull Request Description
-        uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
         with:
           script: |
             const description = context.payload.pull_request.body;
@@ -79,20 +82,22 @@ jobs:
         run: ./vendor/bin/sail test
 
       - name: Generate Coverage Report
-        run: ./vendor/bin/sail php vendor/bin/phpunit --coverage-clover=tests/report/coverage.xml
+        run: ./vendor/bin/sail php vendor/bin/phpunit \
+          --coverage-clover=tests/report/coverage.xml
 
       - name: Install diff-cover
         run: pip install diff-cover
 
       - name: Run Diff Coverage
-        run: |
-          diff-cover tests/report/coverage.xml --compare-branch=origin/develop --fail-under=50
+        run: diff-cover tests/report/coverage.xml \
+          --compare-branch=origin/develop \
+          --fail-under=50
 
       # ❌ TEMPORARILY DISABLED PHPCS & PINT
       - name: Run Static Analysis Only
         run: |
-          # composer lint      
-          composer phpstan    
+          # composer lint
+          composer phpstan
 
       - name: Upload Coverage to Codacy
         if: github.event_name == 'push' || github.event_name == 'pull_request'
