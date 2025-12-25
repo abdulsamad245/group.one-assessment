@@ -1,6 +1,9 @@
 {
     "preset": "laravel",
     "rules": {
+        "blank_lines_before_namespace": false,
+        "single_blank_line_before_namespace": true,
+
         "array_syntax": {
             "syntax": "short"
         },
@@ -41,11 +44,7 @@
         "no_blank_lines_after_phpdoc": true,
         "no_empty_statement": true,
         "no_extra_blank_lines": {
-            "tokens": [
-                "extra",
-                "throw",
-                "use"
-            ]
+            "tokens": ["extra", "throw", "use"]
         },
         "no_leading_import_slash": true,
         "no_leading_namespace_whitespace": true,
@@ -83,7 +82,6 @@
         "phpdoc_var_without_name": true,
         "return_type_declaration": true,
         "short_scalar_cast": true,
-        "single_blank_line_before_namespace": true,
         "single_class_element_per_statement": {
             "elements": ["property"]
         },
