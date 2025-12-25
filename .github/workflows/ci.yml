@@ -19,6 +19,7 @@ jobs:
       DB_PASSWORD: password
       APP_ENV: testing
       APP_DEBUG: true
+      APP_KEY: ${{ secrets.APP_KEY }}   # Use GitHub secret
 
     steps:
       # 1. Checkout code
@@ -44,15 +45,11 @@ jobs:
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
 
-      # 5. Generate application key
-      - name: Generate APP_KEY
-        run: ./vendor/bin/sail artisan key:generate --ansi
-
-      # 6. Start Laravel Sail (MySQL + services)
+      # 5. Start Laravel Sail (MySQL + services)
       - name: Start Sail
         run: ./vendor/bin/sail up -d
 
-      # 7. Wait for MySQL to be ready
+      # 6. Wait for MySQL to be ready
       - name: Wait for MySQL
         run: |
           until ./vendor/bin/sail exec -T mysql mysqladmin ping -uroot -ppassword --silent; do
@@ -60,11 +57,11 @@ jobs:
             sleep 5
           done
 
-      # 8. Run migrations & seeders
+      # 7. Run migrations & seeders
       - name: Set Up Database
         run: ./vendor/bin/sail artisan migrate --seed --force
 
-      # 9. Validate Pull Request Description (manual validation)
+      # 8. Validate Pull Request Description (manual validation)
       - name: Validate Pull Request Description
         uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
@@ -75,27 +72,27 @@ jobs:
               throw new Error("PR description is too short or empty. Please provide a detailed description.");
             }
 
-      # 10. Run unit & integration tests
+      # 9. Run unit & integration tests
       - name: Execute Tests
         run: ./vendor/bin/sail test
 
-      # 11. Generate code coverage report
+      # 10. Generate code coverage report
       - name: Generate Coverage Report
         run: ./vendor/bin/sail php vendor/bin/phpunit --coverage-clover=tests/report/coverage.xml
 
-      # 12. Run diff coverage (fail if under 50%)
+      # 11. Run diff coverage (fail if under 50%)
       - name: Run Diff Coverage
         run: |
           diff-cover tests/report/coverage.xml --compare-branch=origin/develop --fail-under=50
 
-      # 13. Run code quality checks
+      # 12. Run code quality checks
       - name: Run Linting & Static Analysis
         run: |
           composer lint        # Pint / formatting
           composer phpstan     # PHPStan
           composer phpcs       # PHPCS / coding standards
 
-      # 14. Upload coverage to Codacy (optional)
+      # 13. Upload coverage to Codacy (optional)
       - name: Upload Coverage to Codacy
         if: github.event_name == 'push' || github.event_name == 'pull_request'
         uses: codacy/codacy-coverage-reporter-action@v1
@@ -103,7 +100,7 @@ jobs:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           coverage-reports: tests/report/coverage.xml
 
-      # 15. Post diff coverage report to PR (optional)
+      # 14. Post diff coverage report to PR (optional)
       - name: Post Diff Coverage to PR
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v6
