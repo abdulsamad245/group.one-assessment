@@ -92,19 +92,23 @@ jobs:
       - name: Generate Coverage Report
         run: ./vendor/bin/sail php vendor/bin/phpunit --coverage-clover=tests/report/coverage.xml
 
-      # 11. Run diff coverage (fail if under 50%)
+      # 11. Install diff-cover
+      - name: Install diff-cover
+        run: pip install diff-cover
+
+      # 12. Run diff coverage (fail if under 50%)
       - name: Run Diff Coverage
         run: |
           diff-cover tests/report/coverage.xml --compare-branch=origin/develop --fail-under=50
 
-      # 12. Run code quality checks
+      # 13. Run code quality checks
       - name: Run Linting & Static Analysis
         run: |
           composer lint        # Pint / formatting
           composer phpstan     # PHPStan
           composer phpcs       # PHPCS / coding standards
 
-      # 13. Upload coverage to Codacy (optional)
+      # 14. Upload coverage to Codacy
       - name: Upload Coverage to Codacy
         if: github.event_name == 'push' || github.event_name == 'pull_request'
         uses: codacy/codacy-coverage-reporter-action@v1
@@ -112,7 +116,7 @@ jobs:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           coverage-reports: tests/report/coverage.xml
 
-      # 14. Post diff coverage report to PR (optional)
+      # 15. Post diff coverage report to PR (optional)
       - name: Post Diff Coverage to PR
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v6
