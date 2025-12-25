@@ -1,5 +1,5 @@
 {
-    "name": "license-service/group.one Centralized-license-service",
+    "name": "license-service/group-one-centralized-license-service",
     "type": "project",
     "description": "group.one Centralized License Service - Multi-tenant, multi-brand license management system",
     "keywords": ["laravel", "license", "multi-tenant", "saas"],
