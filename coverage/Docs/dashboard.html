@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /var/www/html/app/Docs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../_css/bootstrap.min.css?v=11.0.11" rel="stylesheet" type="text/css">
+  <link href="../_css/nv.d3.min.css?v=11.0.11" rel="stylesheet" type="text/css">
+  <link href="../_css/style.css?v=11.0.11" rel="stylesheet" type="text/css">
+  <link href="../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../index.html">/var/www/html/app</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Docs</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="ActivationDocs.php.html#8">App\Docs\ActivationDocs</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ApiKeyDocs.php.html#8">App\Docs\ApiKeyDocs</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AuthDocs.php.html#8">App\Docs\AuthDocs</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CustomerDocs.php.html#8">App\Docs\CustomerDocs</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LicenseDocs.php.html#8">App\Docs\LicenseDocs</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LicenseKeyDocs.php.html#8">App\Docs\LicenseKeyDocs</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Schemas.php.html#8">App\Docs\Schemas</a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="ActivationDocs.php.html#72"><abbr title="App\Docs\ActivationDocs::store">store</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivationDocs.php.html#109"><abbr title="App\Docs\ActivationDocs::deactivate">deactivate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivationDocs.php.html#167"><abbr title="App\Docs\ActivationDocs::status">status</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ApiKeyDocs.php.html#75"><abbr title="App\Docs\ApiKeyDocs::store">store</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AuthDocs.php.html#50"><abbr title="App\Docs\AuthDocs::register">register</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AuthDocs.php.html#91"><abbr title="App\Docs\AuthDocs::login">login</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AuthDocs.php.html#119"><abbr title="App\Docs\AuthDocs::logout">logout</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CustomerDocs.php.html#74"><abbr title="App\Docs\CustomerDocs::licenses">licenses</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LicenseDocs.php.html#98"><abbr title="App\Docs\LicenseDocs::store">store</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LicenseDocs.php.html#198"><abbr title="App\Docs\LicenseDocs::renew">renew</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LicenseDocs.php.html#236"><abbr title="App\Docs\LicenseDocs::suspend">suspend</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LicenseDocs.php.html#268"><abbr title="App\Docs\LicenseDocs::resume">resume</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LicenseDocs.php.html#306"><abbr title="App\Docs\LicenseDocs::cancel">cancel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LicenseKeyDocs.php.html#77"><abbr title="App\Docs\LicenseKeyDocs::showByKey">showByKey</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Schemas.php.html#27"><abbr title="App\Docs\Schemas::userSchema">userSchema</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Schemas.php.html#49"><abbr title="App\Docs\Schemas::apiKeySchema">apiKeySchema</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Schemas.php.html#72"><abbr title="App\Docs\Schemas::brandSchema">brandSchema</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Schemas.php.html#112"><abbr title="App\Docs\Schemas::licenseSchema">licenseSchema</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Schemas.php.html#137"><abbr title="App\Docs\Schemas::licenseKeySchema">licenseKeySchema</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Schemas.php.html#184"><abbr title="App\Docs\Schemas::activationSchema">activationSchema</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Schemas.php.html#205"><abbr title="App\Docs\Schemas::errorSchema">errorSchema</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Schemas.php.html#235"><abbr title="App\Docs\Schemas::paginatedResponseSchema">paginatedResponseSchema</abbr></a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 11.0.11</a> using <a href="https://www.php.net/" target="_top">PHP 8.3.29</a> and <a href="https://phpunit.de/">PHPUnit 11.5.46</a> at Thu Dec 25 8:40:32 UTC 2025.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../_js/jquery.min.js?v=11.0.11" type="text/javascript"></script>
+  <script src="../_js/d3.min.js?v=11.0.11" type="text/javascript"></script>
+  <script src="../_js/nv.d3.min.js?v=11.0.11" type="text/javascript"></script>
+  <script type="text/javascript">
+$(document).ready(function() {
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#classCoverageDistribution svg')
+      .datum(getCoverageDistributionData([7,0,0,0,0,0,0,0,0,0,0,1], "Class Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#methodCoverageDistribution svg')
+      .datum(getCoverageDistributionData([22,0,0,0,0,0,0,0,0,0,0,0], "Method Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getCoverageDistributionData(data, label) {
+    var labels = [
+      '0%',
+      '0-10%',
+      '10-20%',
+      '20-30%',
+      '30-40%',
+      '40-50%',
+      '50-60%',
+      '60-70%',
+      '70-80%',
+      '80-90%',
+      '90-100%',
+      '100%'
+    ];
+    var values = [];
+    $.each(labels, function(key) {
+      values.push({x: labels[key], y: data[key]});
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Cyclomatic Complexity');
+
+    d3.select('#classComplexity svg')
+      .datum(getComplexityData([[0,3,"<a href=\"ActivationDocs.php.html#8\">App\\Docs\\ActivationDocs<\/a>"],[0,1,"<a href=\"ApiKeyDocs.php.html#8\">App\\Docs\\ApiKeyDocs<\/a>"],[0,3,"<a href=\"AuthDocs.php.html#8\">App\\Docs\\AuthDocs<\/a>"],[0,1,"<a href=\"CustomerDocs.php.html#8\">App\\Docs\\CustomerDocs<\/a>"],[0,5,"<a href=\"LicenseDocs.php.html#8\">App\\Docs\\LicenseDocs<\/a>"],[0,1,"<a href=\"LicenseKeyDocs.php.html#8\">App\\Docs\\LicenseKeyDocs<\/a>"],[100,0,"<a href=\"OpenApi.php.html#103\">App\\Docs\\OpenApi<\/a>"],[0,8,"<a href=\"Schemas.php.html#8\">App\\Docs\\Schemas<\/a>"]], 'Class Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Method Complexity');
+
+    d3.select('#methodComplexity svg')
+      .datum(getComplexityData([[0,1,"<a href=\"ActivationDocs.php.html#72\">App\\Docs\\ActivationDocs::store<\/a>"],[0,1,"<a href=\"ActivationDocs.php.html#109\">App\\Docs\\ActivationDocs::deactivate<\/a>"],[0,1,"<a href=\"ActivationDocs.php.html#167\">App\\Docs\\ActivationDocs::status<\/a>"],[0,1,"<a href=\"ApiKeyDocs.php.html#75\">App\\Docs\\ApiKeyDocs::store<\/a>"],[0,1,"<a href=\"AuthDocs.php.html#50\">App\\Docs\\AuthDocs::register<\/a>"],[0,1,"<a href=\"AuthDocs.php.html#91\">App\\Docs\\AuthDocs::login<\/a>"],[0,1,"<a href=\"AuthDocs.php.html#119\">App\\Docs\\AuthDocs::logout<\/a>"],[0,1,"<a href=\"CustomerDocs.php.html#74\">App\\Docs\\CustomerDocs::licenses<\/a>"],[0,1,"<a href=\"LicenseDocs.php.html#98\">App\\Docs\\LicenseDocs::store<\/a>"],[0,1,"<a href=\"LicenseDocs.php.html#198\">App\\Docs\\LicenseDocs::renew<\/a>"],[0,1,"<a href=\"LicenseDocs.php.html#236\">App\\Docs\\LicenseDocs::suspend<\/a>"],[0,1,"<a href=\"LicenseDocs.php.html#268\">App\\Docs\\LicenseDocs::resume<\/a>"],[0,1,"<a href=\"LicenseDocs.php.html#306\">App\\Docs\\LicenseDocs::cancel<\/a>"],[0,1,"<a href=\"LicenseKeyDocs.php.html#77\">App\\Docs\\LicenseKeyDocs::showByKey<\/a>"],[0,1,"<a href=\"Schemas.php.html#27\">App\\Docs\\Schemas::userSchema<\/a>"],[0,1,"<a href=\"Schemas.php.html#49\">App\\Docs\\Schemas::apiKeySchema<\/a>"],[0,1,"<a href=\"Schemas.php.html#72\">App\\Docs\\Schemas::brandSchema<\/a>"],[0,1,"<a href=\"Schemas.php.html#112\">App\\Docs\\Schemas::licenseSchema<\/a>"],[0,1,"<a href=\"Schemas.php.html#137\">App\\Docs\\Schemas::licenseKeySchema<\/a>"],[0,1,"<a href=\"Schemas.php.html#184\">App\\Docs\\Schemas::activationSchema<\/a>"],[0,1,"<a href=\"Schemas.php.html#205\">App\\Docs\\Schemas::errorSchema<\/a>"],[0,1,"<a href=\"Schemas.php.html#235\">App\\Docs\\Schemas::paginatedResponseSchema<\/a>"]], 'Method Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getComplexityData(data, label) {
+    var values = [];
+    $.each(data, function(key) {
+      var value = Math.round(data[key][0]*100) / 100;
+      values.push({
+        x: value,
+        y: data[key][1],
+        class: data[key][2],
+        size: 0.05,
+        shape: 'diamond'
+      });
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+});
+  </script>
+ </body>
+</html>

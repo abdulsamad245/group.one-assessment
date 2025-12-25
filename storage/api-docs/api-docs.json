@@ -1,0 +1,1239 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "group.one Centralized License Service API",
+        "description": "Multi-tenant, multi-brand license management system API. All endpoints require API key authentication.",
+        "contact": {
+            "email": "support@licenseservice.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api",
+            "description": "API Server"
+        }
+    ],
+    "paths": {
+        "/v1/activations": {
+            "post": {
+                "tags": [
+                    "Activations"
+                ],
+                "summary": "Activate a license",
+                "description": "Activate a license key on a specific device. Returns activation details if successful.",
+                "operationId": "activateLicense",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "license_key"
+                                ],
+                                "properties": {
+                                    "license_key": {
+                                        "description": "The license key to activate",
+                                        "type": "string",
+                                        "example": "XXXX-XXXX-XXXX-XXXX"
+                                    },
+                                    "device_identifier": {
+                                        "description": "Unique device identifier",
+                                        "type": "string",
+                                        "example": "MAC-ADDRESS-001"
+                                    },
+                                    "device_name": {
+                                        "description": "Human-readable device name",
+                                        "type": "string",
+                                        "example": "John's MacBook Pro"
+                                    },
+                                    "metadata": {
+                                        "description": "Additional device/activation metadata",
+                                        "type": "object",
+                                        "example": {
+                                            "os": "macOS",
+                                            "version": "14.0",
+                                            "app_version": "2.1.0"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "License activated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "License activated successfully"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Activation"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Activation failed - Invalid key, expired, or max activations reached",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Maximum activations reached"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "ApiKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/v1/deactivations": {
+            "post": {
+                "tags": [
+                    "Activations"
+                ],
+                "summary": "Deactivate a license",
+                "description": "Deactivate an active license activation, freeing up an activation slot",
+                "operationId": "deactivateLicense",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "activation_id"
+                                ],
+                                "properties": {
+                                    "activation_id": {
+                                        "description": "The activation ID to deactivate",
+                                        "type": "integer",
+                                        "example": 123
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "License deactivated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "License deactivated successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Activation not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Activation not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "ApiKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/v1/activations/status": {
+            "get": {
+                "tags": [
+                    "Activations"
+                ],
+                "summary": "Check activation status",
+                "description": "Check the activation status of a license key, optionally for a specific device",
+                "operationId": "checkActivationStatus",
+                "parameters": [
+                    {
+                        "name": "license_key",
+                        "in": "query",
+                        "description": "The license key to check",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "XXXX-XXXX-XXXX-XXXX"
+                        }
+                    },
+                    {
+                        "name": "device_identifier",
+                        "in": "query",
+                        "description": "Optional device identifier to check specific device activation",
+                        "schema": {
+                            "type": "string",
+                            "example": "MAC-ADDRESS-001"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Activation status retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "is_active": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                },
+                                                "license_valid": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                },
+                                                "activations_count": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "max_activations": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "expires_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "ApiKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/v1/brands": {
+            "get": {
+                "tags": [
+                    "Brands"
+                ],
+                "summary": "List all brands",
+                "description": "Retrieve a list of all brands (tenants) in the system. Returns brands scoped to the authenticated API key.",
+                "operationId": "getBrands",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Brands found successfully"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Brand"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid or missing API key",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "API key is required"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "ApiKeyHeader": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Brands"
+                ],
+                "summary": "Create a new brand",
+                "description": "Create a new brand (tenant) in the system",
+                "operationId": "createBrand",
+                "requestBody": {
+                    "description": "Brand data",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "slug"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "Brand name",
+                                        "type": "string",
+                                        "example": "Acme Corporation"
+                                    },
+                                    "slug": {
+                                        "description": "URL-friendly identifier",
+                                        "type": "string",
+                                        "example": "acme-corp"
+                                    },
+                                    "description": {
+                                        "description": "Brand description",
+                                        "type": "string",
+                                        "example": "Leading software company"
+                                    },
+                                    "contact_email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "contact@acme.com"
+                                    },
+                                    "website": {
+                                        "type": "string",
+                                        "format": "url",
+                                        "example": "https://acme.com"
+                                    },
+                                    "settings": {
+                                        "type": "object",
+                                        "example": {
+                                            "theme": "dark",
+                                            "notifications": true
+                                        }
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Brand created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Brand created successfully"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Brand"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation failed"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "ApiKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/v1/brands/{id}": {
+            "get": {
+                "tags": [
+                    "Brands"
+                ],
+                "summary": "Get a specific brand",
+                "description": "Retrieve details of a specific brand by ID",
+                "operationId": "getBrand",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Brand ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Brand found successfully"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Brand"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Brand not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Brand not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "ApiKeyHeader": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Brands"
+                ],
+                "summary": "Update a brand",
+                "description": "Update an existing brand's information",
+                "operationId": "updateBrand",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Brand ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Brand"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Brand updated successfully"
+                    },
+                    "404": {
+                        "description": "Brand not found"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "ApiKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/v1/licenses": {
+            "get": {
+                "tags": [
+                    "Licenses"
+                ],
+                "summary": "List all licenses",
+                "description": "Retrieve a paginated list of licenses for the authenticated brand",
+                "operationId": "getLicenses",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for pagination",
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Items per page",
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer"
+                                                },
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/License"
+                                                    }
+                                                },
+                                                "total": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "ApiKeyHeader": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Licenses"
+                ],
+                "summary": "Create a new license",
+                "description": "Create a new license for a customer",
+                "operationId": "createLicense",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "brand_id",
+                                    "customer_email",
+                                    "product_name",
+                                    "license_type"
+                                ],
+                                "properties": {
+                                    "brand_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "customer_email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "customer@mailinator.com"
+                                    },
+                                    "customer_name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "product_name": {
+                                        "type": "string",
+                                        "example": "Premium Software"
+                                    },
+                                    "license_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "perpetual",
+                                            "subscription",
+                                            "trial"
+                                        ],
+                                        "example": "subscription"
+                                    },
+                                    "max_activations": {
+                                        "type": "integer",
+                                        "example": 5
+                                    },
+                                    "expires_at": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-12-31"
+                                    },
+                                    "metadata": {
+                                        "type": "object",
+                                        "example": {
+                                            "plan": "pro"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "License created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/License"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "ApiKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/v1/licenses/{id}": {
+            "get": {
+                "tags": [
+                    "Licenses"
+                ],
+                "summary": "Get a specific license",
+                "description": "Retrieve details of a specific license",
+                "operationId": "getLicense",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/License"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "License not found"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "ApiKeyHeader": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Licenses"
+                ],
+                "summary": "Update a license",
+                "description": "Update license details such as expiration date or activation limits",
+                "operationId": "updateLicense",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "max_activations": {
+                                        "type": "integer"
+                                    },
+                                    "expires_at": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean"
+                                    },
+                                    "metadata": {
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "License updated successfully"
+                    },
+                    "404": {
+                        "description": "License not found"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "ApiKeyHeader": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Brand": {
+                "title": "Brand",
+                "description": "Brand (Tenant) model",
+                "required": [
+                    "id",
+                    "name",
+                    "slug"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Brand ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Brand name",
+                        "type": "string",
+                        "example": "Acme Corporation"
+                    },
+                    "slug": {
+                        "description": "URL-friendly identifier",
+                        "type": "string",
+                        "example": "acme-corp"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Leading software company",
+                        "nullable": true
+                    },
+                    "contact_email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "contact@acme.com",
+                        "nullable": true
+                    },
+                    "website": {
+                        "type": "string",
+                        "format": "url",
+                        "example": "https://acme.com",
+                        "nullable": true
+                    },
+                    "settings": {
+                        "type": "object",
+                        "example": {
+                            "theme": "dark"
+                        },
+                        "nullable": true
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "License": {
+                "title": "License",
+                "description": "License model",
+                "required": [
+                    "id",
+                    "brand_id",
+                    "customer_email",
+                    "product_name",
+                    "license_type"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "brand_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "customer_email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "customer@mailinator.com"
+                    },
+                    "customer_name": {
+                        "type": "string",
+                        "example": "John Doe",
+                        "nullable": true
+                    },
+                    "product_name": {
+                        "type": "string",
+                        "example": "Premium Software"
+                    },
+                    "license_type": {
+                        "type": "string",
+                        "enum": [
+                            "perpetual",
+                            "subscription",
+                            "trial"
+                        ],
+                        "example": "subscription"
+                    },
+                    "max_activations": {
+                        "type": "integer",
+                        "example": 5
+                    },
+                    "expires_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-12-31T23:59:59Z",
+                        "nullable": true
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "metadata": {
+                        "type": "object",
+                        "example": {
+                            "plan": "pro"
+                        },
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "brand": {
+                        "$ref": "#/components/schemas/Brand"
+                    }
+                },
+                "type": "object"
+            },
+            "LicenseKey": {
+                "title": "License Key",
+                "description": "License key model",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "license_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "key": {
+                        "type": "string",
+                        "example": "XXXX-XXXX-XXXX-XXXX"
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "activated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "Activation": {
+                "title": "Activation",
+                "description": "License activation model",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "license_key_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "device_identifier": {
+                        "type": "string",
+                        "example": "MAC-ADDRESS-001"
+                    },
+                    "device_name": {
+                        "type": "string",
+                        "example": "John's MacBook Pro",
+                        "nullable": true
+                    },
+                    "activated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    },
+                    "deactivated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "last_check_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "metadata": {
+                        "type": "object",
+                        "example": {
+                            "os": "macOS"
+                        },
+                        "nullable": true
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "license_key": {
+                        "$ref": "#/components/schemas/LicenseKey"
+                    }
+                },
+                "type": "object"
+            },
+            "Error": {
+                "title": "Error Response",
+                "description": "Standard error response",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "An error occurred"
+                    },
+                    "errors": {
+                        "description": "Validation errors (if applicable)",
+                        "type": "object",
+                        "example": {
+                            "field": "Error message"
+                        },
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedResponse": {
+                "title": "Paginated Response",
+                "description": "Standard paginated response wrapper",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Data retrieved successfully"
+                    },
+                    "data": {
+                        "properties": {
+                            "current_page": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "data": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object"
+                                }
+                            },
+                            "first_page_url": {
+                                "type": "string"
+                            },
+                            "from": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "last_page": {
+                                "type": "integer",
+                                "example": 10
+                            },
+                            "last_page_url": {
+                                "type": "string"
+                            },
+                            "next_page_url": {
+                                "type": "string",
+                                "nullable": true
+                            },
+                            "path": {
+                                "type": "string"
+                            },
+                            "per_page": {
+                                "type": "integer",
+                                "example": 15
+                            },
+                            "prev_page_url": {
+                                "type": "string",
+                                "nullable": true
+                            },
+                            "to": {
+                                "type": "integer",
+                                "example": 15
+                            },
+                            "total": {
+                                "type": "integer",
+                                "example": 100
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "ApiKeyAuth": {
+                "type": "http",
+                "description": "Enter your API key in the format: lcs_xxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+                "bearerFormat": "API Key",
+                "scheme": "bearer"
+            },
+            "ApiKeyHeader": {
+                "type": "apiKey",
+                "description": "API key for authentication",
+                "name": "X-API-Key",
+                "in": "header"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Brands",
+            "description": "Brand management endpoints - Brands represent tenants in the system"
+        },
+        {
+            "name": "Licenses",
+            "description": "License management endpoints - Create and manage licenses for brands"
+        },
+        {
+            "name": "Activations",
+            "description": "License activation endpoints - Activate, deactivate, and check activation status"
+        }
+    ]
+}

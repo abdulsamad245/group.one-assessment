@@ -1,0 +1,15 @@
+{
+  "customer_email": "customer@mailinator.com",
+  "customer_name": "John Doe",
+  "product_name": "WordPress Premium Theme",
+  "product_sku": "WP-THEME-001",
+  "license_type": "subscription",
+  "max_activations_per_instance": {
+    "https://mysite.mailinator.com": 3,
+    "https://staging.mysite.mailinator.com": 2,
+    "host:server01.mailinator.com": 5,
+    "machine:ABC123-DEF456": 1
+  },
+  "expires_at": "2026-12-31"
+}
+

@@ -1,0 +1,96 @@
+{
+    "name": "license-service/group.one Centralized-license-service",
+    "type": "project",
+    "description": "group.one Centralized License Service - Multi-tenant, multi-brand license management system",
+    "keywords": ["laravel", "license", "multi-tenant", "saas"],
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "guzzlehttp/guzzle": "^7.8",
+        "laravel/framework": "^11.0",
+        "laravel/sanctum": "^4.0",
+        "laravel/tinker": "^2.9",
+        "sentry/sentry-laravel": "*"
+    },
+    "require-dev": {
+        "darkaonline/l5-swagger": "^8.5",
+        "fakerphp/faker": "^1.23",
+        "larastan/larastan": "^2.9",
+        "laravel/pint": "^1.13",
+        "laravel/sail": "^1.26",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.0",
+        "phpstan/phpstan": "^1.10",
+        "phpunit/phpunit": "^11.0",
+        "squizlabs/php_codesniffer": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+"scripts": {
+    "post-autoload-dump": [
+        "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+        "@php artisan package:discover --ansi"
+    ],
+    "post-update-cmd": [
+        "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+    ],
+    "post-root-package-install": [
+        "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+    ],
+    "post-create-project-cmd": [
+        "@php artisan key:generate --ansi",
+        "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+        "@php artisan migrate --graceful --ansi"
+    ],
+
+    "phpstan": "vendor/bin/sail php vendor/bin/phpstan analyse",
+
+    "test": "vendor/bin/sail php vendor/bin/phpunit",
+    "test:coverage": "vendor/bin/sail php vendor/bin/phpunit --coverage-html coverage",
+
+    "pint": "vendor/bin/sail php vendor/bin/pint",
+    "pint:test": "vendor/bin/sail php vendor/bin/pint --test",
+
+    "phpcs": "vendor/bin/sail php vendor/bin/phpcs",
+    "phpcbf": "vendor/bin/sail php vendor/bin/phpcbf",
+
+    "lint": [
+        "@pint",
+        "@phpcs"
+    ],
+
+    "quality": [
+        "@pint",
+        "@phpcs",
+        "@phpstan",
+        "@test"
+    ]
+},
+
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

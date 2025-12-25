@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /var/www/html/app/Repositories</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../_css/bootstrap.min.css?v=11.0.11" rel="stylesheet" type="text/css">
+  <link href="../_css/nv.d3.min.css?v=11.0.11" rel="stylesheet" type="text/css">
+  <link href="../_css/style.css?v=11.0.11" rel="stylesheet" type="text/css">
+  <link href="../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../index.html">/var/www/html/app</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Repositories</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="ApiKeyRepository.php.html#8">App\Repositories\ApiKeyRepository</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BrandRepository.php.html#9">App\Repositories\BrandRepository</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UserRepository.php.html#8">App\Repositories\UserRepository</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LicenseRepository.php.html#10">App\Repositories\LicenseRepository</a></td><td class="text-right">26%</td></tr>
+       <tr><td><a href="ActivationRepository.php.html#9">App\Repositories\ActivationRepository</a></td><td class="text-right">40%</td></tr>
+       <tr><td><a href="LicenseKeyRepository.php.html#9">App\Repositories\LicenseKeyRepository</a></td><td class="text-right">60%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="BrandRepository.php.html#9">App\Repositories\BrandRepository</a></td><td class="text-right">90</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="ActivationRepository.php.html#22"><abbr title="App\Repositories\ActivationRepository::getByLicenseKey">getByLicenseKey</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivationRepository.php.html#30"><abbr title="App\Repositories\ActivationRepository::getActiveByLicenseKey">getActiveByLicenseKey</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivationRepository.php.html#40"><abbr title="App\Repositories\ActivationRepository::findByDeviceIdentifier">findByDeviceIdentifier</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivationRepository.php.html#63"><abbr title="App\Repositories\ActivationRepository::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivationRepository.php.html#72"><abbr title="App\Repositories\ActivationRepository::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivationRepository.php.html#80"><abbr title="App\Repositories\ActivationRepository::countActiveByLicenseKey">countActiveByLicenseKey</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivationRepository.php.html#115"><abbr title="App\Repositories\ActivationRepository::getStaleActivations">getStaleActivations</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ApiKeyRepository.php.html#13"><abbr title="App\Repositories\ApiKeyRepository::findById">findById</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ApiKeyRepository.php.html#21"><abbr title="App\Repositories\ApiKeyRepository::findByPrefix">findByPrefix</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ApiKeyRepository.php.html#29"><abbr title="App\Repositories\ApiKeyRepository::findActiveByBrand">findActiveByBrand</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ApiKeyRepository.php.html#40"><abbr title="App\Repositories\ApiKeyRepository::findByBrand">findByBrand</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ApiKeyRepository.php.html#48"><abbr title="App\Repositories\ApiKeyRepository::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ApiKeyRepository.php.html#56"><abbr title="App\Repositories\ApiKeyRepository::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ApiKeyRepository.php.html#65"><abbr title="App\Repositories\ApiKeyRepository::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ApiKeyRepository.php.html#73"><abbr title="App\Repositories\ApiKeyRepository::updateLastUsed">updateLastUsed</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BrandRepository.php.html#14"><abbr title="App\Repositories\BrandRepository::all">all</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BrandRepository.php.html#22"><abbr title="App\Repositories\BrandRepository::getActive">getActive</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BrandRepository.php.html#30"><abbr title="App\Repositories\BrandRepository::findById">findById</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BrandRepository.php.html#38"><abbr title="App\Repositories\BrandRepository::findBySlug">findBySlug</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BrandRepository.php.html#48"><abbr title="App\Repositories\BrandRepository::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BrandRepository.php.html#58"><abbr title="App\Repositories\BrandRepository::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BrandRepository.php.html#67"><abbr title="App\Repositories\BrandRepository::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BrandRepository.php.html#75"><abbr title="App\Repositories\BrandRepository::existsBySlug">existsBySlug</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LicenseKeyRepository.php.html#26"><abbr title="App\Repositories\LicenseKeyRepository::findById">findById</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LicenseKeyRepository.php.html#51"><abbr title="App\Repositories\LicenseKeyRepository::getByLicense">getByLicense</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LicenseKeyRepository.php.html#71"><abbr title="App\Repositories\LicenseKeyRepository::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LicenseKeyRepository.php.html#80"><abbr title="App\Repositories\LicenseKeyRepository::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LicenseKeyRepository.php.html#96"><abbr title="App\Repositories\LicenseKeyRepository::getActive">getActive</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LicenseRepository.php.html#31"><abbr title="App\Repositories\LicenseRepository::findByCustomerEmail">findByCustomerEmail</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LicenseRepository.php.html#41"><abbr title="App\Repositories\LicenseRepository::findByCustomerEmailAllBrands">findByCustomerEmailAllBrands</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LicenseRepository.php.html#51"><abbr title="App\Repositories\LicenseRepository::findByBrand">findByBrand</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LicenseRepository.php.html#80"><abbr title="App\Repositories\LicenseRepository::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LicenseRepository.php.html#88"><abbr title="App\Repositories\LicenseRepository::getExpired">getExpired</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LicenseRepository.php.html#98"><abbr title="App\Repositories\LicenseRepository::getExpiringSoon">getExpiringSoon</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UserRepository.php.html#13"><abbr title="App\Repositories\UserRepository::findById">findById</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UserRepository.php.html#21"><abbr title="App\Repositories\UserRepository::findByEmail">findByEmail</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UserRepository.php.html#29"><abbr title="App\Repositories\UserRepository::findByBrand">findByBrand</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UserRepository.php.html#37"><abbr title="App\Repositories\UserRepository::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UserRepository.php.html#45"><abbr title="App\Repositories\UserRepository::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UserRepository.php.html#54"><abbr title="App\Repositories\UserRepository::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="BrandRepository.php.html#75"><abbr title="App\Repositories\BrandRepository::existsBySlug">existsBySlug</abbr></a></td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 11.0.11</a> using <a href="https://www.php.net/" target="_top">PHP 8.3.29</a> and <a href="https://phpunit.de/">PHPUnit 11.5.46</a> at Thu Dec 25 8:40:32 UTC 2025.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../_js/jquery.min.js?v=11.0.11" type="text/javascript"></script>
+  <script src="../_js/d3.min.js?v=11.0.11" type="text/javascript"></script>
+  <script src="../_js/nv.d3.min.js?v=11.0.11" type="text/javascript"></script>
+  <script type="text/javascript">
+$(document).ready(function() {
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#classCoverageDistribution svg')
+      .datum(getCoverageDistributionData([3,0,0,1,0,1,0,1,0,0,0,0], "Class Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#methodCoverageDistribution svg')
+      .datum(getCoverageDistributionData([40,0,0,0,0,0,0,0,0,0,0,13], "Method Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getCoverageDistributionData(data, label) {
+    var labels = [
+      '0%',
+      '0-10%',
+      '10-20%',
+      '20-30%',
+      '30-40%',
+      '40-50%',
+      '50-60%',
+      '60-70%',
+      '70-80%',
+      '80-90%',
+      '90-100%',
+      '100%'
+    ];
+    var values = [];
+    $.each(labels, function(key) {
+      values.push({x: labels[key], y: data[key]});
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Cyclomatic Complexity');
+
+    d3.select('#classComplexity svg')
+      .datum(getComplexityData([[40,11,"<a href=\"ActivationRepository.php.html#9\">App\\Repositories\\ActivationRepository<\/a>"],[0,8,"<a href=\"ApiKeyRepository.php.html#8\">App\\Repositories\\ApiKeyRepository<\/a>"],[0,9,"<a href=\"BrandRepository.php.html#9\">App\\Repositories\\BrandRepository<\/a>"],[60,10,"<a href=\"LicenseKeyRepository.php.html#9\">App\\Repositories\\LicenseKeyRepository<\/a>"],[26.31578947368421,10,"<a href=\"LicenseRepository.php.html#10\">App\\Repositories\\LicenseRepository<\/a>"],[0,6,"<a href=\"UserRepository.php.html#8\">App\\Repositories\\UserRepository<\/a>"]], 'Class Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Method Complexity');
+
+    d3.select('#methodComplexity svg')
+      .datum(getComplexityData([[100,1,"<a href=\"ActivationRepository.php.html#14\">App\\Repositories\\ActivationRepository::findById<\/a>"],[0,1,"<a href=\"ActivationRepository.php.html#22\">App\\Repositories\\ActivationRepository::getByLicenseKey<\/a>"],[0,1,"<a href=\"ActivationRepository.php.html#30\">App\\Repositories\\ActivationRepository::getActiveByLicenseKey<\/a>"],[0,1,"<a href=\"ActivationRepository.php.html#40\">App\\Repositories\\ActivationRepository::findByDeviceIdentifier<\/a>"],[100,1,"<a href=\"ActivationRepository.php.html#53\">App\\Repositories\\ActivationRepository::create<\/a>"],[0,1,"<a href=\"ActivationRepository.php.html#63\">App\\Repositories\\ActivationRepository::update<\/a>"],[0,1,"<a href=\"ActivationRepository.php.html#72\">App\\Repositories\\ActivationRepository::delete<\/a>"],[0,1,"<a href=\"ActivationRepository.php.html#80\">App\\Repositories\\ActivationRepository::countActiveByLicenseKey<\/a>"],[100,1,"<a href=\"ActivationRepository.php.html#91\">App\\Repositories\\ActivationRepository::countUniqueActiveInstanceValues<\/a>"],[100,1,"<a href=\"ActivationRepository.php.html#103\">App\\Repositories\\ActivationRepository::findByInstanceTypeAndValue<\/a>"],[0,1,"<a href=\"ActivationRepository.php.html#115\">App\\Repositories\\ActivationRepository::getStaleActivations<\/a>"],[0,1,"<a href=\"ApiKeyRepository.php.html#13\">App\\Repositories\\ApiKeyRepository::findById<\/a>"],[0,1,"<a href=\"ApiKeyRepository.php.html#21\">App\\Repositories\\ApiKeyRepository::findByPrefix<\/a>"],[0,1,"<a href=\"ApiKeyRepository.php.html#29\">App\\Repositories\\ApiKeyRepository::findActiveByBrand<\/a>"],[0,1,"<a href=\"ApiKeyRepository.php.html#40\">App\\Repositories\\ApiKeyRepository::findByBrand<\/a>"],[0,1,"<a href=\"ApiKeyRepository.php.html#48\">App\\Repositories\\ApiKeyRepository::create<\/a>"],[0,1,"<a href=\"ApiKeyRepository.php.html#56\">App\\Repositories\\ApiKeyRepository::update<\/a>"],[0,1,"<a href=\"ApiKeyRepository.php.html#65\">App\\Repositories\\ApiKeyRepository::delete<\/a>"],[0,1,"<a href=\"ApiKeyRepository.php.html#73\">App\\Repositories\\ApiKeyRepository::updateLastUsed<\/a>"],[0,1,"<a href=\"BrandRepository.php.html#14\">App\\Repositories\\BrandRepository::all<\/a>"],[0,1,"<a href=\"BrandRepository.php.html#22\">App\\Repositories\\BrandRepository::getActive<\/a>"],[0,1,"<a href=\"BrandRepository.php.html#30\">App\\Repositories\\BrandRepository::findById<\/a>"],[0,1,"<a href=\"BrandRepository.php.html#38\">App\\Repositories\\BrandRepository::findBySlug<\/a>"],[0,1,"<a href=\"BrandRepository.php.html#48\">App\\Repositories\\BrandRepository::create<\/a>"],[0,1,"<a href=\"BrandRepository.php.html#58\">App\\Repositories\\BrandRepository::update<\/a>"],[0,1,"<a href=\"BrandRepository.php.html#67\">App\\Repositories\\BrandRepository::delete<\/a>"],[0,2,"<a href=\"BrandRepository.php.html#75\">App\\Repositories\\BrandRepository::existsBySlug<\/a>"],[100,1,"<a href=\"LicenseKeyRepository.php.html#14\">App\\Repositories\\LicenseKeyRepository::findByKey<\/a>"],[0,1,"<a href=\"LicenseKeyRepository.php.html#26\">App\\Repositories\\LicenseKeyRepository::findById<\/a>"],[100,1,"<a href=\"LicenseKeyRepository.php.html#34\">App\\Repositories\\LicenseKeyRepository::findByBrandAndCustomer<\/a>"],[100,1,"<a href=\"LicenseKeyRepository.php.html#43\">App\\Repositories\\LicenseKeyRepository::findByCustomerEmail<\/a>"],[0,1,"<a href=\"LicenseKeyRepository.php.html#51\">App\\Repositories\\LicenseKeyRepository::getByLicense<\/a>"],[100,1,"<a href=\"LicenseKeyRepository.php.html#61\">App\\Repositories\\LicenseKeyRepository::create<\/a>"],[0,1,"<a href=\"LicenseKeyRepository.php.html#71\">App\\Repositories\\LicenseKeyRepository::update<\/a>"],[0,1,"<a href=\"LicenseKeyRepository.php.html#80\">App\\Repositories\\LicenseKeyRepository::delete<\/a>"],[100,1,"<a href=\"LicenseKeyRepository.php.html#88\">App\\Repositories\\LicenseKeyRepository::keyExists<\/a>"],[0,1,"<a href=\"LicenseKeyRepository.php.html#96\">App\\Repositories\\LicenseKeyRepository::getActive<\/a>"],[100,1,"<a href=\"LicenseRepository.php.html#15\">App\\Repositories\\LicenseRepository::paginate<\/a>"],[100,1,"<a href=\"LicenseRepository.php.html#23\">App\\Repositories\\LicenseRepository::findById<\/a>"],[0,1,"<a href=\"LicenseRepository.php.html#31\">App\\Repositories\\LicenseRepository::findByCustomerEmail<\/a>"],[0,1,"<a href=\"LicenseRepository.php.html#41\">App\\Repositories\\LicenseRepository::findByCustomerEmailAllBrands<\/a>"],[0,1,"<a href=\"LicenseRepository.php.html#51\">App\\Repositories\\LicenseRepository::findByBrand<\/a>"],[100,1,"<a href=\"LicenseRepository.php.html#61\">App\\Repositories\\LicenseRepository::create<\/a>"],[100,1,"<a href=\"LicenseRepository.php.html#71\">App\\Repositories\\LicenseRepository::update<\/a>"],[0,1,"<a href=\"LicenseRepository.php.html#80\">App\\Repositories\\LicenseRepository::delete<\/a>"],[0,1,"<a href=\"LicenseRepository.php.html#88\">App\\Repositories\\LicenseRepository::getExpired<\/a>"],[0,1,"<a href=\"LicenseRepository.php.html#98\">App\\Repositories\\LicenseRepository::getExpiringSoon<\/a>"],[0,1,"<a href=\"UserRepository.php.html#13\">App\\Repositories\\UserRepository::findById<\/a>"],[0,1,"<a href=\"UserRepository.php.html#21\">App\\Repositories\\UserRepository::findByEmail<\/a>"],[0,1,"<a href=\"UserRepository.php.html#29\">App\\Repositories\\UserRepository::findByBrand<\/a>"],[0,1,"<a href=\"UserRepository.php.html#37\">App\\Repositories\\UserRepository::create<\/a>"],[0,1,"<a href=\"UserRepository.php.html#45\">App\\Repositories\\UserRepository::update<\/a>"],[0,1,"<a href=\"UserRepository.php.html#54\">App\\Repositories\\UserRepository::delete<\/a>"]], 'Method Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getComplexityData(data, label) {
+    var values = [];
+    $.each(data, function(key) {
+      var value = Math.round(data[key][0]*100) / 100;
+      values.push({
+        x: value,
+        y: data[key][1],
+        class: data[key][2],
+        size: 0.05,
+        shape: 'diamond'
+      });
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+});
+  </script>
+ </body>
+</html>

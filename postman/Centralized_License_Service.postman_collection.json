@@ -1,0 +1,404 @@
+{
+	"info": {
+		"_postman_id": "license-service-api",
+		"name": "group.one Centralized License Service API",
+		"description": "Complete API collection for the group.one Centralized License Service - Multi-tenant, multi-brand license management system",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "license-service"
+	},
+	"item": [
+		{
+			"name": "Brands",
+			"item": [
+				{
+					"name": "List All Brands",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/brands",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "brands"]
+						}
+					}
+				},
+				{
+					"name": "Create Brand",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Acme Corporation\",\n    \"slug\": \"acme-corp\",\n    \"description\": \"Leading provider of enterprise software solutions\",\n    \"contact_email\": \"contact@acme-corp.com\",\n    \"website\": \"https://acme-corp.com\",\n    \"is_active\": true,\n    \"settings\": {\n        \"theme\": \"blue\",\n        \"timezone\": \"America/New_York\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/brands",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "brands"]
+						}
+					}
+				},
+				{
+					"name": "Get Brand by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/brands/{{brand_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "brands", "{{brand_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Update Brand",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Acme Corporation Updated\",\n    \"description\": \"Updated description\",\n    \"is_active\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/brands/{{brand_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "brands", "{{brand_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Delete Brand",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/brands/{{brand_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "brands", "{{brand_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Licenses",
+			"item": [
+				{
+					"name": "List All Licenses",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/licenses",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "licenses"]
+						}
+					}
+				},
+				{
+					"name": "Create License",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"brand_id\": 1,\n    \"customer_email\": \"john.doe@mailinator.com\",\n    \"customer_name\": \"John Doe\",\n    \"product_name\": \"Premium Software Suite\",\n    \"product_sku\": \"PREM-001\",\n    \"license_type\": \"subscription\",\n    \"max_activations\": 5,\n    \"expires_at\": \"2025-12-31 23:59:59\",\n    \"metadata\": {\n        \"source\": \"web\",\n        \"campaign\": \"summer-sale\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/licenses",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "licenses"]
+						}
+					}
+				},
+				{
+					"name": "Get License by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/licenses/{{license_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "licenses", "{{license_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Update License",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"max_activations\": 10,\n    \"status\": \"active\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/licenses/{{license_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "licenses", "{{license_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "License Keys",
+			"item": [
+				{
+					"name": "List All License Keys",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/license-keys",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "license-keys"]
+						}
+					}
+				},
+				{
+					"name": "Generate License Key",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"license_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/license-keys",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "license-keys"]
+						}
+					}
+				},
+				{
+					"name": "Get License Key by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/license-keys/{{license_key_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "license-keys", "{{license_key_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Activations",
+			"item": [
+				{
+					"name": "Activate License",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"license_key\": \"XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX\",\n    \"device_identifier\": \"DEVICE-12345\",\n    \"device_name\": \"John's MacBook Pro\",\n    \"ip_address\": \"192.168.1.100\",\n    \"user_agent\": \"Mozilla/5.0\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/activations",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "activations"]
+						}
+					}
+				},
+				{
+					"name": "Deactivate License",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"activation_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/deactivations",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "deactivations"]
+						}
+					}
+				},
+				{
+					"name": "Check Activation Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/activations/status?license_key=XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "activations", "status"],
+							"query": [
+								{
+									"key": "license_key",
+									"value": "XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Customers",
+			"item": [
+				{
+					"name": "Get Customer Licenses",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/customers/licenses?email=john.doe@mailinator.com",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "customers", "licenses"],
+							"query": [
+								{
+									"key": "email",
+									"value": "john.doe@mailinator.com"
+								}
+							]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost",
+			"type": "string"
+		},
+		{
+			"key": "brand_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "license_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "license_key_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "activation_id",
+			"value": "1",
+			"type": "string"
+		}
+	]
+}
+

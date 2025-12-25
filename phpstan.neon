@@ -1,0 +1,50 @@
+includes:
+    - ./vendor/larastan/larastan/extension.neon
+    - phpstan-baseline.neon
+
+rules:
+    - App\PHPStan\Rules\NoVarDumpRule
+    - App\PHPStan\Rules\NoUpdateOptionRule
+
+parameters:
+    # Paths to scan
+    paths:
+        - app
+        - database
+        - routes
+
+    # Rule level (0-9, higher is stricter)
+    level: 5
+
+    # Ignore errors in specific files
+    excludePaths:
+        - app/Console/Kernel.php
+        - app/Exceptions/Handler.php
+
+    # Deprecated options removed (replaced by ignoreErrors)
+    # checkMissingIterableValueType: false
+    # checkGenericClassInNonGenericObjectType: false
+
+    # Custom rules & ignore specific PHPStan errors
+    ignoreErrors:
+        # Laravel magic properties and Eloquent
+        - identifier: missingType.iterableValue
+        - identifier: missingType.generics
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder#'
+        - '#Access to an undefined property Illuminate\\Database\\Eloquent\\Model#'
+
+        # Resource properties (wrap $resource)
+        - '#Access to an undefined property App\\Http\\Resources#'
+
+        # Other legacy warnings you want to suppress
+        - '#Access to an undefined property App\\Models#'
+        - '#Call to an undefined method App\\Http\\Resources#'
+
+    # Treat unmatched ignored errors as warnings instead of errors
+    reportUnmatchedIgnoredErrors: false
+
+    # Parallel processing
+    parallel:
+        jobSize: 20
+        maximumNumberOfProcesses: 32
+        minimumNumberOfJobsPerProcess: 2

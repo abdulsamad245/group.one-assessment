@@ -1,0 +1,8 @@
+{
+  "name": "Test User",
+  "email": "user@test.com",
+  "password": "password123",
+  "password_confirmation": "password123",
+  "brand_name": "Test Brand"
+}
+

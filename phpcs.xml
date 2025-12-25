@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<ruleset name="group.one Centralized License Service Coding Standard">
+
+    <!-- Paths to check -->
+    <file>app</file>
+    <file>database</file>
+    <file>routes</file>
+
+    <!-- Paths to exclude -->
+    <exclude-pattern>vendor/*</exclude-pattern>
+    <exclude-pattern>storage/*</exclude-pattern>
+    <exclude-pattern>bootstrap/cache/*</exclude-pattern>
+    <exclude-pattern>app/Docs/*</exclude-pattern>
+    <exclude-pattern>database/migrations/*</exclude-pattern>
+
+    <!-- Base standard -->
+    <rule ref="PSR12"/>
+
+    <!-- Disable file-level docblock requirement -->
+    <rule ref="Squiz.Commenting.FileComment">
+        <severity>0</severity>
+    </rule>
+
+    <!-- Optional: soft line-length warnings -->
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="160"/>
+            <property name="absoluteLineLimit" value="0"/>
+        </properties>
+        <severity>0</severity>
+    </rule>
+
+</ruleset>

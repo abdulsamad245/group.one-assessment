@@ -1,0 +1,1953 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "group.one Centralized License Service API",
+        "description": "Multi-tenant, multi-brand license management system API.\n\n## Authentication Types\n\n### 1. Sanctum Authentication (User Account Management)\nUsed for user account management and API key management. Obtain a Bearer token by logging in via `/v1/auth/login`.\n\n### 2. API Key Authentication (License Operations)\nUsed for all license, activation, and brand management operations. API keys are managed via the account management endpoints.\n\n## License Key Format\nLicense keys are formatted as 5 groups of 5 characters: `XXXXX-XXXXX-XXXXX-XXXXX-XXXXX`\n\n## Instance Identifiers\nActivations are tied to specific instances. Instance identifiers can be:\n- **Site URL**: `https://mysite.mailinator.com`\n- **Host**: `host:server01.mailinator.com`\n- **Machine ID**: `machine:ABC123-DEF456`\n\n## Request Tracing\nAll API requests support the `X-Correlation-ID` header for request tracing. If not provided, one will be generated and returned in the response.",
+        "contact": {
+            "email": "support@licenseservice.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api",
+            "description": "API Server"
+        }
+    ],
+    "paths": {
+        "/v1/activations": {
+            "post": {
+                "tags": [
+                    "Activations"
+                ],
+                "summary": "Activate a license",
+                "description": "Activate a license key for a specific instance type and value. Seat management is based on unique instance values per type.",
+                "operationId": "activateLicense",
+                "parameters": [
+                    {
+                        "name": "X-Correlation-ID",
+                        "in": "header",
+                        "description": "Optional correlation ID for request tracing",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "550e8400-e29b-41d4-a716-446655440000"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "license_key",
+                                    "product_slug",
+                                    "instance_type",
+                                    "instance_value"
+                                ],
+                                "properties": {
+                                    "license_key": {
+                                        "description": "The license key to activate (5 groups of 5 characters)",
+                                        "type": "string",
+                                        "example": "ABCDE-FGHIJ-KLMNO-PQRST-UVWXY"
+                                    },
+                                    "product_slug": {
+                                        "description": "The product slug for this activation (machine-friendly identifier)",
+                                        "type": "string",
+                                        "example": "wp-rocket-pro"
+                                    },
+                                    "instance_type": {
+                                        "description": "Type of instance identifier for seat management",
+                                        "type": "string",
+                                        "enum": [
+                                            "site_url",
+                                            "host",
+                                            "machine_id"
+                                        ],
+                                        "example": "site_url"
+                                    },
+                                    "instance_value": {
+                                        "description": "Value of the instance identifier (e.g., the actual URL, hostname, or machine ID)",
+                                        "type": "string",
+                                        "example": "https://domain1.mailinator.com"
+                                    },
+                                    "device_identifier": {
+                                        "description": "Optional unique device identifier",
+                                        "type": "string",
+                                        "example": "device-macbook-pro-001",
+                                        "nullable": true
+                                    },
+                                    "device_name": {
+                                        "description": "Optional human-readable device name",
+                                        "type": "string",
+                                        "example": "John's MacBook Pro",
+                                        "nullable": true
+                                    },
+                                    "metadata": {
+                                        "description": "Additional device/activation metadata",
+                                        "type": "object",
+                                        "example": {
+                                            "os": "macOS",
+                                            "version": "14.0",
+                                            "app_version": "2.1.0"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "License activated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "License activated successfully"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Activation"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Activation failed - Invalid key, expired, or max seats reached for instance type",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Maximum activations reached for instance type: site_url"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "ApiKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/v1/deactivations": {
+            "post": {
+                "tags": [
+                    "Activations"
+                ],
+                "summary": "Deactivate a license",
+                "description": "Deactivate an active license activation, freeing up an activation slot",
+                "operationId": "deactivateLicense",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "activation_id"
+                                ],
+                                "properties": {
+                                    "activation_id": {
+                                        "description": "The activation ID (UUID) to deactivate",
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "License deactivated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "License deactivated successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Activation not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Activation not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "ApiKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/v1/activations/status": {
+            "get": {
+                "tags": [
+                    "Activations"
+                ],
+                "summary": "Check activation status",
+                "description": "Check the activation status of a license key for a specific product. Returns seat usage per instance type.",
+                "operationId": "checkActivationStatus",
+                "parameters": [
+                    {
+                        "name": "X-Correlation-ID",
+                        "in": "header",
+                        "description": "Optional correlation ID for request tracing",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "550e8400-e29b-41d4-a716-446655440000"
+                        }
+                    },
+                    {
+                        "name": "license_key",
+                        "in": "query",
+                        "description": "The license key to check (5 groups of 5 characters)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "ABCDE-FGHIJ-KLMNO-PQRST-UVWXY"
+                        }
+                    },
+                    {
+                        "name": "product_slug",
+                        "in": "query",
+                        "description": "The product slug to check status for (machine-friendly identifier)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "wp-rocket-pro"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Activation status retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "valid": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                },
+                                                "license_type": {
+                                                    "type": "string",
+                                                    "example": "standard"
+                                                },
+                                                "product_name": {
+                                                    "type": "string",
+                                                    "example": "WP Rocket Pro"
+                                                },
+                                                "product_slug": {
+                                                    "type": "string",
+                                                    "example": "wp-rocket-pro"
+                                                },
+                                                "customer_name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "entitlements": {
+                                                    "description": "Seat usage per instance type",
+                                                    "type": "object",
+                                                    "example": {
+                                                        "site_url": {
+                                                            "max_seats": 3,
+                                                            "used_seats": 1,
+                                                            "remaining_seats": 2
+                                                        },
+                                                        "host": {
+                                                            "max_seats": 5,
+                                                            "used_seats": 0,
+                                                            "remaining_seats": 5
+                                                        }
+                                                    }
+                                                },
+                                                "expires_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "ApiKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/v1/api-keys": {
+            "post": {
+                "tags": [
+                    "API Keys"
+                ],
+                "summary": "Create a new API key",
+                "description": "Create a new API key for the authenticated user's brand. The full key is only returned once upon creation.",
+                "operationId": "createApiKey",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "A descriptive name for the API key",
+                                        "type": "string",
+                                        "example": "Production API Key"
+                                    },
+                                    "expires_at": {
+                                        "description": "Optional expiration date",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-12-31"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "API key created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "API key created successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "api_key": {
+                                                    "$ref": "#/components/schemas/ApiKey"
+                                                },
+                                                "key": {
+                                                    "description": "The full API key - only shown once",
+                                                    "type": "string",
+                                                    "example": "lcs_xxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "SanctumAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/auth/register": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Register a new user and brand",
+                "description": "Register a new user account along with a new brand. Returns user details, brand info, and an initial API key.",
+                "operationId": "register",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation",
+                                    "brand_name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "User's full name",
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "description": "User's email address",
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@mailinator.com"
+                                    },
+                                    "password": {
+                                        "description": "Password (min 8 characters)",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "password_confirmation": {
+                                        "description": "Password confirmation",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "brand_name": {
+                                        "description": "Brand/company name",
+                                        "type": "string",
+                                        "example": "Acme Corporation"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User registered successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User registered successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "user": {
+                                                    "$ref": "#/components/schemas/User"
+                                                },
+                                                "brand": {
+                                                    "$ref": "#/components/schemas/Brand"
+                                                },
+                                                "api_key": {
+                                                    "description": "Initial API key for the brand",
+                                                    "type": "string",
+                                                    "example": "lcs_xxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/auth/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Login user",
+                "description": "Authenticate a user and receive a Sanctum Bearer token for account management operations.",
+                "operationId": "login",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@mailinator.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User logged in successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "user": {
+                                                    "$ref": "#/components/schemas/User"
+                                                },
+                                                "token": {
+                                                    "description": "Sanctum Bearer token",
+                                                    "type": "string",
+                                                    "example": "1|abc123def456..."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid credentials"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/auth/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Logout user",
+                "description": "Invalidate the current user's authentication token.",
+                "operationId": "logout",
+                "responses": {
+                    "200": {
+                        "description": "Logout successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User logged out successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "SanctumAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/customers/licenses": {
+            "get": {
+                "tags": [
+                    "Customers"
+                ],
+                "summary": "Get customer licenses",
+                "description": "Retrieve all licenses and license keys for a customer by email address. Provides a complete summary of the customer's license entitlements.",
+                "operationId": "getCustomerLicenses",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "Customer's email address",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "email",
+                            "example": "customer@mailinator.com"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Customer licenses retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Customer licenses found successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "email": {
+                                                    "type": "string",
+                                                    "format": "email",
+                                                    "example": "customer@mailinator.com"
+                                                },
+                                                "license_keys": {
+                                                    "description": "All license keys belonging to the customer",
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "string",
+                                                                "format": "uuid"
+                                                            },
+                                                            "key": {
+                                                                "type": "string",
+                                                                "example": "ABCDE-FGHIJ-KLMNO-PQRST-UVWXY"
+                                                            },
+                                                            "status": {
+                                                                "type": "string",
+                                                                "enum": [
+                                                                    "active",
+                                                                    "suspended",
+                                                                    "revoked",
+                                                                    "expired"
+                                                                ]
+                                                            },
+                                                            "licenses": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "id": {
+                                                                            "type": "string",
+                                                                            "format": "uuid"
+                                                                        },
+                                                                        "product_name": {
+                                                                            "type": "string",
+                                                                            "example": "Premium Software"
+                                                                        },
+                                                                        "license_type": {
+                                                                            "type": "string",
+                                                                            "enum": [
+                                                                                "perpetual",
+                                                                                "subscription",
+                                                                                "trial"
+                                                                            ]
+                                                                        },
+                                                                        "status": {
+                                                                            "type": "string",
+                                                                            "enum": [
+                                                                                "active",
+                                                                                "suspended",
+                                                                                "cancelled",
+                                                                                "expired"
+                                                                            ]
+                                                                        },
+                                                                        "expires_at": {
+                                                                            "type": "string",
+                                                                            "format": "date-time",
+                                                                            "nullable": true
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            },
+                                                            "activations": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "$ref": "#/components/schemas/Activation"
+                                                                }
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "total_licenses": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                },
+                                                "total_activations": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error - Invalid email format"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "ApiKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/v1/licenses": {
+            "post": {
+                "tags": [
+                    "Licenses"
+                ],
+                "summary": "Create a new license",
+                "description": "Create a new license for a customer. If no license key exists for the customer email, one will be generated.",
+                "operationId": "createLicense",
+                "parameters": [
+                    {
+                        "name": "X-Correlation-ID",
+                        "in": "header",
+                        "description": "Optional correlation ID for request tracing",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "550e8400-e29b-41d4-a716-446655440000"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "customer_email",
+                                    "product_name",
+                                    "product_slug",
+                                    "license_type"
+                                ],
+                                "properties": {
+                                    "customer_email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "customer@mailinator.com"
+                                    },
+                                    "customer_name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "product_name": {
+                                        "description": "Human-readable product name",
+                                        "type": "string",
+                                        "example": "WP Rocket Pro"
+                                    },
+                                    "product_slug": {
+                                        "description": "Machine-friendly product identifier (lowercase, hyphen-separated)",
+                                        "type": "string",
+                                        "example": "wp-rocket-pro"
+                                    },
+                                    "license_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "perpetual",
+                                            "subscription",
+                                            "trial"
+                                        ],
+                                        "example": "subscription"
+                                    },
+                                    "max_activations_per_instance": {
+                                        "description": "Maximum seats (unique values) per instance type for seat management. Keys are instance types (site_url, host, machine_id), values are the max number of unique values allowed.",
+                                        "type": "object",
+                                        "example": {
+                                            "site_url": 3,
+                                            "host": 5,
+                                            "machine_id": 1
+                                        }
+                                    },
+                                    "expires_at": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-12-31"
+                                    },
+                                    "metadata": {
+                                        "type": "object",
+                                        "example": {
+                                            "plan": "pro"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "License created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "license": {
+                                                    "$ref": "#/components/schemas/License"
+                                                },
+                                                "license_key": {
+                                                    "description": "Only returned when a new license key is generated",
+                                                    "type": "string",
+                                                    "example": "ABCDE-FGHIJ-KLMNO-PQRST-UVWXY"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "ApiKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/v1/licenses/{id}/renew": {
+            "post": {
+                "tags": [
+                    "Licenses"
+                ],
+                "summary": "Renew a license",
+                "description": "Extend the expiration date of a license. Only applicable to subscription and trial licenses.",
+                "operationId": "renewLicense",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "License ID (UUID)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "expires_at"
+                                ],
+                                "properties": {
+                                    "expires_at": {
+                                        "description": "New expiration date",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-12-31"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "License renewed successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "License renewed successfully"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/License"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "License not found"
+                    },
+                    "422": {
+                        "description": "License cannot be renewed (e.g., perpetual license)"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "ApiKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/v1/licenses/{id}/suspend": {
+            "post": {
+                "tags": [
+                    "Licenses"
+                ],
+                "summary": "Suspend a license",
+                "description": "Temporarily suspend a license. Suspended licenses cannot be used for activations.",
+                "operationId": "suspendLicense",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "License ID (UUID)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "reason": {
+                                        "description": "Optional reason for suspension",
+                                        "type": "string",
+                                        "example": "Payment overdue"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "License suspended successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "License suspended successfully"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/License"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "License not found"
+                    },
+                    "422": {
+                        "description": "License is already suspended or cancelled"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "ApiKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/v1/licenses/{id}/resume": {
+            "post": {
+                "tags": [
+                    "Licenses"
+                ],
+                "summary": "Resume a suspended license",
+                "description": "Reactivate a previously suspended license.",
+                "operationId": "resumeLicense",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "License ID (UUID)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "License resumed successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "License resumed successfully"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/License"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "License not found"
+                    },
+                    "422": {
+                        "description": "License is not suspended"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "ApiKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/v1/licenses/{id}/cancel": {
+            "post": {
+                "tags": [
+                    "Licenses"
+                ],
+                "summary": "Cancel a license",
+                "description": "Permanently cancel a license. This action cannot be undone. All active activations will be deactivated.",
+                "operationId": "cancelLicense",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "License ID (UUID)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "reason": {
+                                        "description": "Optional reason for cancellation",
+                                        "type": "string",
+                                        "example": "Customer requested cancellation"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "License cancelled successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "License cancelled successfully"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/License"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "License not found"
+                    },
+                    "422": {
+                        "description": "License is already cancelled"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "ApiKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/v1/license-keys/key/{key}": {
+            "get": {
+                "tags": [
+                    "License Keys"
+                ],
+                "summary": "Get a license key by key string",
+                "description": "Retrieve full details of a license key by its key string (5 groups of 5 characters). Includes status, entitlements, associated licenses, and remaining activation slots per instance.",
+                "operationId": "getLicenseKeyByKey",
+                "parameters": [
+                    {
+                        "name": "key",
+                        "in": "path",
+                        "description": "The license key string (5 groups of 5 characters)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "ABCDE-FGHIJ-KLMNO-PQRST-UVWXY"
+                        }
+                    },
+                    {
+                        "name": "X-Correlation-ID",
+                        "in": "header",
+                        "description": "Optional correlation ID for request tracing",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "550e8400-e29b-41d4-a716-446655440000"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "License key retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "License key found successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "key": {
+                                                    "type": "string",
+                                                    "example": "ABCDE-FGHIJ-KLMNO-PQRST-UVWXY"
+                                                },
+                                                "customer_email": {
+                                                    "type": "string",
+                                                    "format": "email"
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "active",
+                                                        "suspended",
+                                                        "revoked",
+                                                        "expired"
+                                                    ]
+                                                },
+                                                "activations_count": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "entitlements": {
+                                                    "description": "Activation limits and usage per product and instance type",
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "product_name": {
+                                                                "type": "string",
+                                                                "example": "WP Rocket Pro"
+                                                            },
+                                                            "product_slug": {
+                                                                "type": "string",
+                                                                "example": "wp-rocket-pro"
+                                                            },
+                                                            "product_sku": {
+                                                                "type": "string",
+                                                                "example": "WPR-PRO-001"
+                                                            },
+                                                            "license_type": {
+                                                                "type": "string",
+                                                                "example": "subscription"
+                                                            },
+                                                            "license_status": {
+                                                                "type": "string",
+                                                                "example": "active"
+                                                            },
+                                                            "license_expires_at": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "nullable": true
+                                                            },
+                                                            "instances": {
+                                                                "type": "object",
+                                                                "example": {
+                                                                    "site_url": {
+                                                                        "max_activations": 3,
+                                                                        "active_activations": 1,
+                                                                        "remaining_seats": 2
+                                                                    }
+                                                                }
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "licenses": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/License"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "License key not found"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "User": {
+                "title": "User",
+                "description": "User account model",
+                "required": [
+                    "id",
+                    "name",
+                    "email",
+                    "brand_id"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "brand_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440001"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "john@mailinator.com"
+                    },
+                    "role": {
+                        "type": "string",
+                        "enum": [
+                            "admin",
+                            "user"
+                        ],
+                        "example": "user"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "brand": {
+                        "$ref": "#/components/schemas/Brand"
+                    }
+                },
+                "type": "object"
+            },
+            "ApiKey": {
+                "title": "API Key",
+                "description": "API key for authentication",
+                "required": [
+                    "id",
+                    "brand_id",
+                    "name"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "brand_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440001"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Production API Key"
+                    },
+                    "prefix": {
+                        "description": "Key prefix for identification",
+                        "type": "string",
+                        "example": "lcs_xxxxxxxx"
+                    },
+                    "last_used_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "expires_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "Brand": {
+                "title": "Brand",
+                "description": "Brand (Tenant) model",
+                "required": [
+                    "id",
+                    "name",
+                    "slug"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "name": {
+                        "description": "Brand name",
+                        "type": "string",
+                        "example": "Acme Corporation"
+                    },
+                    "slug": {
+                        "description": "URL-friendly identifier",
+                        "type": "string",
+                        "example": "acme-corp"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Leading software company",
+                        "nullable": true
+                    },
+                    "contact_email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "contact@acme.com",
+                        "nullable": true
+                    },
+                    "website": {
+                        "type": "string",
+                        "format": "url",
+                        "example": "https://acme.com",
+                        "nullable": true
+                    },
+                    "settings": {
+                        "type": "object",
+                        "example": {
+                            "theme": "dark"
+                        },
+                        "nullable": true
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "License": {
+                "title": "License",
+                "description": "License model",
+                "required": [
+                    "id",
+                    "brand_id",
+                    "license_key_id",
+                    "product_name",
+                    "product_slug",
+                    "license_type"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "brand_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440001"
+                    },
+                    "license_key_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440002"
+                    },
+                    "product_name": {
+                        "description": "Human-readable product name",
+                        "type": "string",
+                        "example": "WP Rocket Pro"
+                    },
+                    "product_slug": {
+                        "description": "Machine-friendly product identifier",
+                        "type": "string",
+                        "example": "wp-rocket-pro"
+                    },
+                    "license_type": {
+                        "type": "string",
+                        "enum": [
+                            "perpetual",
+                            "subscription",
+                            "trial"
+                        ],
+                        "example": "subscription"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "suspended",
+                            "cancelled",
+                            "expired"
+                        ],
+                        "example": "active"
+                    },
+                    "max_activations_per_instance": {
+                        "description": "Maximum seats (unique values) allowed per instance type for seat management",
+                        "type": "object",
+                        "example": {
+                            "site_url": 3,
+                            "host": 5,
+                            "machine_id": 1
+                        }
+                    },
+                    "expires_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-12-31T23:59:59Z",
+                        "nullable": true
+                    },
+                    "metadata": {
+                        "type": "object",
+                        "example": {
+                            "plan": "pro"
+                        },
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "brand": {
+                        "$ref": "#/components/schemas/Brand"
+                    },
+                    "license_key": {
+                        "$ref": "#/components/schemas/LicenseKey"
+                    }
+                },
+                "type": "object"
+            },
+            "LicenseKey": {
+                "title": "License Key",
+                "description": "License key model - keys are formatted as 5 groups of 5 characters",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "brand_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440001"
+                    },
+                    "customer_email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "customer@mailinator.com"
+                    },
+                    "key": {
+                        "description": "License key in 5 groups of 5 characters",
+                        "type": "string",
+                        "example": "ABCDE-FGHIJ-KLMNO-PQRST-UVWXY"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "suspended",
+                            "revoked",
+                            "expired"
+                        ],
+                        "example": "active"
+                    },
+                    "max_activations_per_instance": {
+                        "description": "Maximum seats (unique values) allowed per instance type for seat management",
+                        "type": "object",
+                        "example": {
+                            "site_url": 3,
+                            "host": 5,
+                            "machine_id": 1
+                        }
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "Activation": {
+                "title": "Activation",
+                "description": "License activation model - activations are tied to specific instance types and values for seat management",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "license_key_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440001"
+                    },
+                    "license_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440002"
+                    },
+                    "device_identifier": {
+                        "description": "Optional unique device identifier",
+                        "type": "string",
+                        "example": "device-macbook-pro-001",
+                        "nullable": true
+                    },
+                    "device_name": {
+                        "type": "string",
+                        "example": "John's MacBook Pro",
+                        "nullable": true
+                    },
+                    "instance_type": {
+                        "description": "Type of instance identifier for seat management",
+                        "type": "string",
+                        "enum": [
+                            "site_url",
+                            "host",
+                            "machine_id"
+                        ],
+                        "example": "site_url"
+                    },
+                    "instance_value": {
+                        "description": "Value of the instance identifier",
+                        "type": "string",
+                        "example": "https://domain1.mailinator.com"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "inactive"
+                        ],
+                        "example": "active"
+                    },
+                    "activated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    },
+                    "deactivated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "last_checked_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "metadata": {
+                        "type": "object",
+                        "example": {
+                            "os": "macOS",
+                            "version": "14.0"
+                        },
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "license_key": {
+                        "$ref": "#/components/schemas/LicenseKey"
+                    },
+                    "license": {
+                        "$ref": "#/components/schemas/License"
+                    }
+                },
+                "type": "object"
+            },
+            "Error": {
+                "title": "Error Response",
+                "description": "Standard error response",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "An error occurred"
+                    },
+                    "errors": {
+                        "description": "Validation errors (if applicable)",
+                        "type": "object",
+                        "example": {
+                            "field": "Error message"
+                        },
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedResponse": {
+                "title": "Paginated Response",
+                "description": "Standard paginated response wrapper",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Data retrieved successfully"
+                    },
+                    "data": {
+                        "properties": {
+                            "current_page": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "data": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object"
+                                }
+                            },
+                            "first_page_url": {
+                                "type": "string"
+                            },
+                            "from": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "last_page": {
+                                "type": "integer",
+                                "example": 10
+                            },
+                            "last_page_url": {
+                                "type": "string"
+                            },
+                            "next_page_url": {
+                                "type": "string",
+                                "nullable": true
+                            },
+                            "path": {
+                                "type": "string"
+                            },
+                            "per_page": {
+                                "type": "integer",
+                                "example": 15
+                            },
+                            "prev_page_url": {
+                                "type": "string",
+                                "nullable": true
+                            },
+                            "to": {
+                                "type": "integer",
+                                "example": 15
+                            },
+                            "total": {
+                                "type": "integer",
+                                "example": 100
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "SanctumAuth": {
+                "type": "http",
+                "description": "Laravel Sanctum Bearer token obtained from /v1/auth/login",
+                "bearerFormat": "Sanctum Token",
+                "scheme": "bearer"
+            },
+            "ApiKeyAuth": {
+                "type": "http",
+                "description": "API key in the format: lcs_xxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+                "bearerFormat": "API Key",
+                "scheme": "bearer"
+            },
+            "ApiKeyHeader": {
+                "type": "apiKey",
+                "description": "API key for authentication via header",
+                "name": "X-API-Key",
+                "in": "header"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Authentication",
+            "description": "User authentication endpoints - Register, login, logout, and get current user"
+        },
+        {
+            "name": "API Keys",
+            "description": "API key management endpoints - Create, list, rotate, and revoke API keys"
+        },
+        {
+            "name": "Licenses",
+            "description": "License management endpoints - Create and manage licenses for brands"
+        },
+        {
+            "name": "License Keys",
+            "description": "License key management endpoints - Generate and manage license keys (5 groups of 5 characters)"
+        },
+        {
+            "name": "Activations",
+            "description": "License activation endpoints - Activate, deactivate, and check activation status. Activations are tied to specific instances (site URL, host, or machine ID)."
+        },
+        {
+            "name": "Customers",
+            "description": "Customer lookup endpoints - Retrieve customer license information"
+        }
+    ]
+}
