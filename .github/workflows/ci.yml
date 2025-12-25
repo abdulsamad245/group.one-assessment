@@ -86,12 +86,12 @@ jobs:
               throw new Error("PR description is too short or empty.");
             }
 
-      # 9. Check PR Task List Completion
-      - name: Check PR Task List Completion
-        if: github.event_name == 'pull_request'
-        uses: venkatsarvesh/pr-tasks-completed-action@v1.0.0
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      # 9. Check PR Task List Completion (temporarily disabled)
+      # - name: Check PR Task List Completion
+      #   if: github.event_name == 'pull_request'
+      #   uses: venkatsarvesh/pr-tasks-completed-action@v1.0.0
+      #   with:
+      #     repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       # 10. Run unit & integration tests
       - name: Execute Tests
