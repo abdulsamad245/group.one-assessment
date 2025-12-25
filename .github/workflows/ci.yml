@@ -86,7 +86,7 @@ jobs:
               throw new Error("PR description is too short or empty.");
             }
 
-      # 9. Check PR Task List Completion using wp-media/pr-checklist-action
+      # 9. Check PR Task List Completion using wp-media/pr-checklist-actions
       - name: Check PR Task List Completion
         if: github.event_name == 'pull_request'
         uses: wp-media/pr-checklist-action@master
