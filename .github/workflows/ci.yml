@@ -86,30 +86,37 @@ jobs:
               throw new Error("PR description is too short or empty.");
             }
 
-      # 9. Run unit & integration tests
+      # 9. Check PR Task List Completion
+      - name: Check PR Task List Completion
+        if: github.event_name == 'pull_request'
+        uses: venkatsarvesh/pr-tasks-completed-action@v1.0.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # 10. Run unit & integration tests
       - name: Execute Tests
         run: ./vendor/bin/sail test
 
-      # 10. Generate code coverage report
+      # 11. Generate code coverage report
       - name: Generate Coverage Report
         run: ./vendor/bin/sail php vendor/bin/phpunit --coverage-clover=tests/report/coverage.xml
 
-      # 11. Install diff-cover
+      # 12. Install diff-cover
       - name: Install diff-cover
         run: pip install diff-cover
 
-      # 12. Run diff coverage (fail if under 50%)
+      # 13. Run diff coverage (fail if under 50%)
       - name: Run Diff Coverage
         run: |
           diff-cover tests/report/coverage.xml --compare-branch=origin/develop --fail-under=50
 
-      # 13. Run Static Analysis Only (temporarily disabled PHPCS & Pint)
+      # 14. Run Static Analysis Only (temporarily disabled PHPCS & Pint)
       - name: Run Static Analysis Only
         run: |
           # composer lint      
           composer phpstan    
 
-      # 14. Upload coverage to Codacy
+      # 15. Upload coverage to Codacy
       - name: Upload Coverage to Codacy
         if: github.event_name == 'push' || github.event_name == 'pull_request'
         uses: codacy/codacy-coverage-reporter-action@v1
